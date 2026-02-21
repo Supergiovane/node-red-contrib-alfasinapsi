@@ -23,6 +23,10 @@ Nodi Node-RED per collegare **Sinapsi Alfa** via WiFi e creare un **controller c
 
 Dovresti vedere i messaggi nella sidebar di debug con valori di potenza ed energia.
 
+<p align="center">
+  <img src="assets/picture.jpg" width="520" alt="jp" />
+</p>
+
 ## Nodi
 
 ### `alfasinapsi-telemetry`
