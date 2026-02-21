@@ -2,6 +2,16 @@
   <img src="https://raw.githubusercontent.com/Supergiovane/node-red-contrib-alfasinapsi/main/assets/alfasinapsi-logo.svg" width="520" alt="node-red-contrib-alfasinapsi logo" />
 </p>
 
+[![NPM version][npm-version-image]][npm-url]
+[![Node.js version][node-version-image]][npm-url]
+[![Node-RED Flow Library][flows-image]][flows-url]
+[![Docs][docs-image]][docs-url]
+[![NPM downloads per month][npm-downloads-month-image]][npm-url]
+[![NPM downloads total][npm-downloads-total-image]][npm-url]
+[![MIT License][license-image]][license-url]
+[![JavaScript Style Guide][standard-image]][standard-url]
+[![Youtube][youtube-image]][youtube-url]
+
 Nodi Node-RED per collegare **Sinapsi Alfa** via WiFi e creare un **controller carichi**.
 
 ## Requisiti
@@ -154,3 +164,19 @@ Invia un messaggio all'ingresso del nodo:
 ## CHANGELOG
 
 [CHANGELOG](changelog.md)
+
+[npm-version-image]: https://img.shields.io/npm/v/node-red-contrib-alfasinapsi.svg
+[npm-url]: https://www.npmjs.com/package/node-red-contrib-alfasinapsi
+[node-version-image]: https://img.shields.io/node/v/node-red-contrib-alfasinapsi.svg
+[flows-image]: https://img.shields.io/badge/Node--RED-Flow%20Library-red
+[flows-url]: https://flows.nodered.org/node/node-red-contrib-alfasinapsi
+[docs-image]: https://img.shields.io/badge/docs-documents-blue
+[docs-url]: documents/
+[npm-downloads-month-image]: https://img.shields.io/npm/dm/node-red-contrib-alfasinapsi.svg
+[npm-downloads-total-image]: https://img.shields.io/npm/dt/node-red-contrib-alfasinapsi.svg
+[license-image]: https://img.shields.io/badge/license-MIT-green.svg
+[license-url]: https://opensource.org/licenses/MIT
+[standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
+[standard-url]: https://standardjs.com
+[youtube-image]: https://img.shields.io/badge/YouTube-Subscribe-red?logo=youtube&logoColor=white
+[youtube-url]: https://www.youtube.com/@Supergiovane
