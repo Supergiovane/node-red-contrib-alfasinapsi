@@ -155,4 +155,4 @@ Invia un messaggio all'ingresso del nodo:
 
 ## CHANGELOG
 
-[CHANGELOG](CHANGELOG.md)
+[CHANGELOG](changelog.md)
