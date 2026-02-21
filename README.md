@@ -10,9 +10,8 @@ This implementation is based on the Home Assistant reference files under `docume
 
 ## What you get
 
-This package adds 3 nodes:
+This package adds these nodes:
 
-- **Sinapsi Alfa device** (`alfasinapsi-device`) – connection settings
 - **Sinapsi Alfa telemetry** (`alfasinapsi-telemetry`) – reads measurements and outputs telemetry
 - **Sinapsi Alfa load controller** (`alfasinapsi-load-controller`) – decides which loads to turn ON/OFF
 
@@ -24,13 +23,12 @@ You can use only the telemetry node (to monitor power/energy), or combine it wit
 - A reachable Sinapsi Alfa on your WiFi network
 - Node-RED running on the same network
 
-
 ## Quick start (step-by-step)
 
 1. Open the Node-RED editor.
 2. In the left palette, search for “alfasinapsi”.
 3. Drag **alfasinapsi telemetry** into the flow.
-4. Double-click it and click the **pencil** next to *Device* to create a new **alfasinapsi device** config.
+4. Double-click it and click the **pencil** next to _Device_ to create a new **alfasinapsi device** config.
 5. Fill in:
    - **Sinapsi IP address**: the IP address of your Sinapsi Alfa (example `192.168.1.186`)
 6. Click **Add** (device), then **Done** (telemetry).
@@ -51,10 +49,12 @@ Polls Sinapsi Alfa and outputs an object with:
 - cutoff notice data (event date + remaining seconds)
 
 Output:
+
 - `msg.topic = "alfasinapsi/telemetry"`
 - `msg.payload = { ...metrics }`
 
 Configuration:
+
 - `Device`: your Sinapsi IP address (connection settings are fixed for stability)
 
 ### `alfasinapsi-load-controller`
@@ -65,11 +65,13 @@ Output 1: summary (`msg.topic = "alfasinapsi/controller"`).
 Output 2..N+1: ON/OFF command for each load (boolean payload).
 
 Algorithm (configurable):
+
 - **Surplus**: enables loads when there is enough **export** to grid (W).
 - **Import limit**: disables loads when **import** exceeds a threshold (W).
 - **Cutoff notice**: if present, disables everything (forced).
 
 Notes:
+
 - Per-load commands are `msg.payload = true/false` with `msg.topic = "load/<name>"`.
 - You can override a load by sending an input message with `topic = "load/<name>"` and boolean `payload`.
 
@@ -89,7 +91,7 @@ Fixed settings (not configurable):
 
 ### 2) `alfasinapsi-telemetry` (read-only measurements)
 
-This node reads measurements every *Poll (ms)* and outputs a single message.
+This node reads measurements every _Poll (ms)_ and outputs a single message.
 
 Typical use:
 
@@ -114,7 +116,7 @@ These are standard power-flow terms used in energy monitoring:
 
 - **Import**: power/energy drawn from the grid (you are consuming more than you produce).
 - **Export**: power/energy fed into the grid (you are producing more than you consume).
-- **Surplus**: available excess power. In this package, surplus logic is based on **export** (optionally reduced by *Surplus reserve*).
+- **Surplus**: available excess power. In this package, surplus logic is based on **export** (optionally reduced by _Surplus reserve_).
 
 ### 3) `alfasinapsi-load-controller` (decisions only)
 
@@ -146,7 +148,7 @@ Send a message into the node input:
 - **Timeout errors**: ensure nothing else is connected to the device at the same time (some devices allow only one client). The nodes will automatically fall back to smaller reads when possible.
 - **Load controller stuck in timeout after deploy**: update to the latest version of this package. Older versions could get stuck after the first failed request due to a queue issue.
 - **No nodes appear in the palette after install**: restart Node-RED and check the Node-RED logs for install errors.
-- **Cutoff notice behavior**: when `payload.cutoff.hasWarning` is `true` and *Turn everything off on cutoff notice* is enabled, the load controller will command all loads OFF.
+- **Cutoff notice behavior**: when `payload.cutoff.hasWarning` is `true` and _Turn everything off on cutoff notice_ is enabled, the load controller will command all loads OFF.
 
 ## Example
 
