@@ -3,7 +3,7 @@
 <br/>
 
 <p>
-<b>Version 0.1.2</b> - February 2026<br/>
+<b>Version 0.1.3</b> - February 2026<br/>
 - HARDEN: added extensive try/catch guards to avoid uncaught exceptions and prevent Node-RED crashes.<br/>
 </p>
 
