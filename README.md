@@ -27,6 +27,8 @@ Dovresti vedere i messaggi nella sidebar di debug con valori di potenza ed energ
   <img src="assets/picture.jpg" width="520" alt="jp" />
 </p>
 
+Esempio `examples/alfasinapsi-load-controller.json`.
+
 ## Nodi
 
 ### `alfasinapsi-telemetry`
@@ -136,7 +138,3 @@ Invia un messaggio all'ingresso del nodo:
 ## Problemi di connessione? Ricorda
 
 - Sinapsi Alfa in genere accetta una sola connessione alla volta: evita di collegare piu sistemi contemporaneamente.
-
-## Esempio
-
-Vedi `examples/alfasinapsi-load-controller.json`.
