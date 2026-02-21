@@ -152,3 +152,7 @@ Invia un messaggio all'ingresso del nodo:
 ## Problemi di connessione? Ricorda
 
 - Sinapsi Alfa in genere accetta una sola connessione alla volta: evita di collegare piu sistemi contemporaneamente.
+
+## CHANGELOG
+
+[CHANGELOG](CHANGELOG.md)

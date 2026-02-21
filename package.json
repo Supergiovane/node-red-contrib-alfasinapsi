@@ -30,7 +30,8 @@
     "locales/**/*",
     "examples/**/*",
     "assets/**/*",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
   "dependencies": {
     "modbus-serial": "^8.0.23"
