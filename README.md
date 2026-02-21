@@ -1,5 +1,9 @@
 # node-red-contrib-alfasinapsi
 
+<p align="center">
+  <img src="assets/alfasinapsi-logo.svg" width="520" alt="node-red-contrib-alfasinapsi logo" />
+</p>
+
 Node-RED nodes to connect to **Sinapsi Alfa** via **Modbus/TCP** (WiFi) and build a **load controller**.
 
 This implementation uses the registers shown in the Home Assistant reference files under `documents/`.
@@ -108,6 +112,14 @@ Message structure (high level):
   - `insight.telemetry`: full decoded telemetry (includes additional fields like yesterday bands, quarter averages, etc.)
   - `insight.meta`: timestamp, function code, read mode
   - `insight.device`: connection profile details
+
+## Terminology (import/export/surplus)
+
+These are standard power-flow terms used in energy monitoring:
+
+- **Import**: power/energy drawn from the grid (you are consuming more than you produce).
+- **Export**: power/energy fed into the grid (you are producing more than you consume).
+- **Surplus**: available excess power. In this package, surplus logic is based on **export** (optionally reduced by *Surplus reserve*).
 
 ### 3) `alfasinapsi-load-controller` (decisions only)
 

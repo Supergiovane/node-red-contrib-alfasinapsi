@@ -5,61 +5,86 @@
     width: 420px;
     max-width: 100%;
   }
+
   #node-input-name {
     width: 360px;
   }
+
   #node-input-mode {
-    width: 320px;
+    width: 280px;
     max-width: 100%;
   }
+
   #node-input-pollInterval,
   #node-input-maxImportW,
   #node-input-importHysteresisW,
   #node-input-surplusReserveW,
   #node-input-surplusHysteresisW {
-    width: 180px;
+    width: 160px;
     max-width: 100%;
   }
 
   .alfasinapsi-loads .red-ui-editableList-container {
     min-height: 240px;
   }
+
   .alfasinapsi-loads-title {
     margin-top: 10px;
     margin-bottom: 4px;
     font-weight: 600;
   }
+
   .alfasinapsi-loads-title i {
     margin-right: 6px;
   }
+
   .alfasinapsi-loads-container {
     display: block;
     width: 100%;
+    /* Fixed-width columns keep the inputs compact (extra space remains on the right). */
+    --alfasinapsi-load-cols: minmax(180px, 220px) 80px 80px 92px 92px;
+    --alfasinapsi-load-gap: 2px;
   }
+
   .alfasinapsi-loads-columns {
     display: grid;
-    grid-template-columns: minmax(180px, 1.7fr) minmax(90px, 0.8fr) minmax(90px, 0.7fr) minmax(110px, 0.9fr) minmax(110px, 0.9fr);
-    gap: 6px;
-    padding-left: 28px; /* draggable handle space */
-    padding-right: 40px; /* remove button space */
+    grid-template-columns: var(--alfasinapsi-load-cols);
+    gap: var(--alfasinapsi-load-gap);
+    width: fit-content;
+    padding-left: 28px;
+    /* draggable handle space */
+    padding-right: 40px;
+    /* remove button space */
     margin-bottom: 6px;
     font-size: 12px;
     opacity: 0.75;
     box-sizing: border-box;
   }
+
   .alfasinapsi-loads-columns div {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
+
   .alfasinapsi-load-row {
     display: grid;
-    grid-template-columns: minmax(180px, 1.7fr) minmax(90px, 0.8fr) minmax(90px, 0.7fr) minmax(110px, 0.9fr) minmax(110px, 0.9fr);
-    gap: 6px;
+    grid-template-columns: var(--alfasinapsi-load-cols);
+    gap: var(--alfasinapsi-load-gap);
+    width: fit-content;
     align-items: center;
   }
+
   .alfasinapsi-load-row input {
-    width: 100%;
+    width: 100% !important;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  /* Reduce extra vertical padding added by editableList */
+  .alfasinapsi-loads .red-ui-editableList-item-content {
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
 </style>
 
@@ -242,6 +267,12 @@
   </dl>
 
   <h3>How the controller works</h3>
+  <p><b>Terminology</b></p>
+  <ul>
+    <li><b>Import</b>: power drawn from the grid (<code>power.importW</code>).</li>
+    <li><b>Export</b>: power fed into the grid (<code>power.exportW</code>).</li>
+    <li><b>Surplus</b>: available excess power. Here it is based on <b>export</b> (optionally reduced by <i>Surplus reserve</i>).</li>
+  </ul>
   <ul>
     <li><b>Surplus</b>: uses exported power (<code>power.exportW</code>) to enable loads.</li>
     <li><b>Import limit</b>: uses imported power (<code>power.importW</code>) to shed loads when above limit.</li>
@@ -298,7 +329,7 @@
         importHysteresisW: { value: 150, validate: RED.validators.number() },
         surplusReserveW: { value: 200, validate: RED.validators.number() },
         surplusHysteresisW: { value: 100, validate: RED.validators.number() },
-        forceOffOnCutoff: { value: true },
+        forceOffOnCutoff: { value: false },
         loads: { value: "[]" }
       },
       inputs: 1,

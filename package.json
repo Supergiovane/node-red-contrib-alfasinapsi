@@ -25,6 +25,7 @@
     "nodes/**/*",
     "locales/**/*",
     "examples/**/*",
+    "assets/**/*",
     "README.md"
   ],
   "dependencies": {
