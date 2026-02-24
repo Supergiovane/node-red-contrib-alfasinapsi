@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Supergiovane/node-red-contrib-alfasinapsi/main/assets/alfasinapsi-logo.svg" width="520" alt="node-red-contrib-alfasinapsi-ultimate logo" />
+  <img src="assets/alfasinapsi-logo.svg" width="520" alt="node-red-contrib-alfasinapsi-ultimate logo" />
 </p>
 
 [![NPM version][npm-version-image]][npm-url]
@@ -36,7 +36,7 @@ Nodi Node-RED per collegare **Sinapsi Alfa** via WiFi e creare un **controller c
 Dovresti vedere i messaggi nella sidebar di debug con valori di potenza ed energia.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Supergiovane/node-red-contrib-alfasinapsi/main/assets/picture.jpg" width="520" alt="Esempio flow" />
+  <img src="assets/picture.jpg" width="520" alt="Esempio flow" />
 </p>
 
 Esempio `examples/alfasinapsi-load-controller.json`.
