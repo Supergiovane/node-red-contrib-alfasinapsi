@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Supergiovane/node-red-contrib-alfasinapsi/main/assets/alfasinapsi-logo.svg" width="520" alt="node-red-contrib-alfasinapsi logo" />
+  <img src="https://raw.githubusercontent.com/Supergiovane/node-red-contrib-alfasinapsi/main/assets/alfasinapsi-logo.svg" width="520" alt="node-red-contrib-alfasinapsi-ultimate logo" />
 </p>
 
 [![NPM version][npm-version-image]][npm-url]
@@ -17,6 +17,10 @@ Nodi Node-RED per collegare **Sinapsi Alfa** via WiFi e creare un **controller c
 ## Requisiti
 
 - Un dispositivo Sinapsi Alfa raggiungibile sulla tua rete WiFi
+
+## CHANGELOG
+
+[CHANGELOG](changelog.md)
 
 ## Avvio rapido (passo-passo)
 
@@ -161,19 +165,15 @@ Invia un messaggio all'ingresso del nodo:
 
 - Sinapsi Alfa in genere accetta una sola connessione alla volta: evita di collegare piu sistemi contemporaneamente.
 
-## CHANGELOG
-
-[CHANGELOG](changelog.md)
-
-[npm-version-image]: https://img.shields.io/npm/v/node-red-contrib-alfasinapsi.svg
-[npm-url]: https://www.npmjs.com/package/node-red-contrib-alfasinapsi
-[node-version-image]: https://img.shields.io/node/v/node-red-contrib-alfasinapsi.svg
+[npm-version-image]: https://img.shields.io/npm/v/node-red-contrib-alfasinapsi-ultimate.svg
+[npm-url]: https://www.npmjs.com/package/node-red-contrib-alfasinapsi-ultimate
+[node-version-image]: https://img.shields.io/node/v/node-red-contrib-alfasinapsi-ultimate.svg
 [flows-image]: https://img.shields.io/badge/Node--RED-Flow%20Library-red
-[flows-url]: https://flows.nodered.org/node/node-red-contrib-alfasinapsi
+[flows-url]: https://flows.nodered.org/node/node-red-contrib-alfasinapsi-ultimate
 [docs-image]: https://img.shields.io/badge/docs-documents-blue
 [docs-url]: documents/
-[npm-downloads-month-image]: https://img.shields.io/npm/dm/node-red-contrib-alfasinapsi.svg
-[npm-downloads-total-image]: https://img.shields.io/npm/dt/node-red-contrib-alfasinapsi.svg
+[npm-downloads-month-image]: https://img.shields.io/npm/dm/node-red-contrib-alfasinapsi-ultimate.svg
+[npm-downloads-total-image]: https://img.shields.io/npm/dt/node-red-contrib-alfasinapsi-ultimate.svg
 [license-image]: https://img.shields.io/badge/license-MIT-green.svg
 [license-url]: https://opensource.org/licenses/MIT
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg

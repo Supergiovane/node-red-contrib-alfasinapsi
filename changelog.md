@@ -1,9 +1,10 @@
-# node-red-contrib-alfasinapsi
+# node-red-contrib-alfasinapsi-ultimate
 
 <br/>
 
 <p>
-<b>Version 0.1.4</b> - February 2026<br/>
+<b>Version 1.0.0</b> - February 2026<br/>
+- BREAKING CHANGE: changed package name to node-red-contrib-alfasinapsi-ultimate
 - FIX: faster node shutdown (best-effort client close) to avoid <code>Close timed out</code> errors on deploy/restart.<br/>
 - NEW: nodes now emit <code>msg.status</code> connection state messages (topics: <code>alfasinapsi/telemetry/status</code>, <code>alfasinapsi/controller/status</code>).<br/>
 - NEW: telemetry and controller summary payloads now include <code>messageAtIso</code> (timestamp messaggio) and <code>meterReadAtIso</code> (timestamp ultima lettura).<br/>

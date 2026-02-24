@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="820" height="240" viewBox="0 0 820 240" role="img" aria-label="ALFA node-red-contrib-alfasinapsi">
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="240" viewBox="0 0 820 240" role="img" aria-label="ALFA node-red-contrib-alfasinapsi-ultimate">
   <defs>
     <linearGradient id="gradMain2" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#0F172A"/>
@@ -36,7 +36,7 @@
         font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial"
         font-size="22" font-weight="500"
         fill="#565d68">
-    node-red-contrib-alfasinapsi
+    node-red-contrib-alfasinapsi-ultimate
   </text>
 
   <rect x="250" y="185" width="420" height="8" rx="4"
