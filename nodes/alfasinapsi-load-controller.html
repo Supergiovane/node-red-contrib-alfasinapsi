@@ -1,28 +1,13 @@
-<style>
-  /* Make form fields more compact (keep whitespace on the right) */
-  #node-input-name,
-  #node-input-device {
-    width: 420px;
-    max-width: 100%;
-  }
+	<style>
+	  /* Make form fields more compact (keep whitespace on the right) */
+	  #node-input-name {
+	    width: 420px;
+	    max-width: 100%;
+	  }
 
-  #node-input-name {
-    width: 360px;
-  }
-
-  #node-input-mode {
-    width: 280px;
-    max-width: 100%;
-  }
-
-  #node-input-pollInterval,
-  #node-input-maxImportW,
-  #node-input-importHysteresisW,
-  #node-input-surplusReserveW,
-  #node-input-surplusHysteresisW {
-    width: 160px;
-    max-width: 100%;
-  }
+	  #node-input-name {
+	    width: 360px;
+	  }
 
   .alfasinapsi-loads .red-ui-editableList-container {
     min-height: 240px;
@@ -38,13 +23,13 @@
     margin-right: 6px;
   }
 
-  .alfasinapsi-loads-container {
-    display: block;
-    width: 100%;
-    /* Fixed-width columns keep the inputs compact (extra space remains on the right). */
-    --alfasinapsi-load-cols: minmax(180px, 220px) 80px 80px 92px 92px;
-    --alfasinapsi-load-gap: 2px;
-  }
+	  .alfasinapsi-loads-container {
+	    display: block;
+	    width: 100%;
+	    /* Fixed-width columns keep the inputs compact (extra space remains on the right). */
+		    --alfasinapsi-load-cols: minmax(220px, 320px) 130px 130px;
+	    --alfasinapsi-load-gap: 2px;
+	  }
 
   .alfasinapsi-loads-columns {
     display: grid;
@@ -88,249 +73,91 @@
   }
 </style>
 
-<script type="text/html" data-template-name="alfasinapsi-load-controller">
-  <div class="form-row">
-    <label for="node-input-name"><i class="fa fa-tag"></i> Nome</label>
-    <input type="text" id="node-input-name" placeholder="controller carichi">
-  </div>
-  <div class="form-row">
-    <label for="node-input-device"><i class="fa fa-plug"></i> Dispositivo</label>
-    <input type="text" id="node-input-device">
-  </div>
-  <div class="form-row">
-    <label for="node-input-pollInterval"><i class="fa fa-clock-o"></i> Poll (ms)</label>
-    <input type="number" id="node-input-pollInterval" placeholder="2000">
-  </div>
+	<script type="text/html" data-template-name="alfasinapsi-load-controller">
+		  <div class="form-row">
+		    <label for="node-input-name"><i class="fa fa-tag"></i> Nome</label>
+		    <input type="text" id="node-input-name" placeholder="controller carichi">
+		  </div>
 
-  <div class="form-row">
-    <label for="node-input-mode"><i class="fa fa-sliders"></i> Modalita</label>
-    <select id="node-input-mode">
-      <option value="both">Surplus + limite import</option>
-      <option value="surplus">Solo surplus (usa export)</option>
-      <option value="limit">Solo limite import (usa import)</option>
-    </select>
-  </div>
-
-  <div class="form-row">
-    <label for="node-input-maxImportW"><i class="fa fa-tachometer"></i> Import massimo (W)</label>
-    <input type="number" id="node-input-maxImportW" placeholder="3000">
-  </div>
-  <div class="form-row">
-    <label for="node-input-importHysteresisW"><i class="fa fa-arrows-h"></i> Isteresi import (W)</label>
-    <input type="number" id="node-input-importHysteresisW" placeholder="150">
-  </div>
-
-  <div class="form-row">
-    <label for="node-input-surplusReserveW"><i class="fa fa-shield"></i> Riserva surplus (W)</label>
-    <input type="number" id="node-input-surplusReserveW" placeholder="200">
-  </div>
-  <div class="form-row">
-    <label for="node-input-surplusHysteresisW"><i class="fa fa-arrows-h"></i> Isteresi surplus (W)</label>
-    <input type="number" id="node-input-surplusHysteresisW" placeholder="100">
-  </div>
-
-  <div class="form-row">
-    <label for="node-input-forceOffOnCutoff"><i class="fa fa-exclamation-triangle"></i> Distacco</label>
-    <input type="checkbox" id="node-input-forceOffOnCutoff" style="width:auto;">
-    <span style="margin-left:6px;">Spegni tutto se arriva avviso distacco</span>
-  </div>
-
-  <div class="form-row alfasinapsi-loads-title">
-    <span><i class="fa fa-list"></i> Carichi</span>
-  </div>
+	  <div class="form-row alfasinapsi-loads-title">
+	    <span><i class="fa fa-list"></i> Carichi</span>
+	  </div>
   <div class="form-row alfasinapsi-loads">
     <input type="hidden" id="node-input-loads">
     <div class="alfasinapsi-loads-container">
-      <div class="alfasinapsi-loads-columns">
-        <div>Nome</div>
-        <div>W</div>
-        <div>Priorita</div>
-        <div>Min acceso (s)</div>
-        <div>Min spento (s)</div>
-      </div>
-      <ol id="node-input-loads-list"></ol>
-    </div>
-  </div>
+		      <div class="alfasinapsi-loads-columns">
+		        <div>Nome (ordine = priorita)</div>
+		        <div>Min acceso (s)</div>
+		        <div>Min spento (s)</div>
+		      </div>
+	      <ol id="node-input-loads-list"></ol>
+	    </div>
+	  </div>
 </script>
 
-<script type="text/html" data-help-name="alfasinapsi-load-controller">
-  <p>
-    <b>Sinapsi Alfa controller carichi</b> legge la telemetria di potenza direttamente dal dispositivo (polling) e decide quali carichi devono essere ON/OFF.
-    Le decisioni vengono inviate come messaggi booleani.
-  </p>
+	<script type="text/html" data-help-name="alfasinapsi-load-controller">
+	  <p>
+	    <b>Sinapsi Alfa load controller</b> gestisce uno <b>shedding stage</b> (0..N) usando i messaggi in formato <b>Telemetria</b>.
+	    In particolare usa <code>msg.payload.cutoff.hasWarning</code> per incrementare/decrementare lo stage.
+	  </p>
 
   <h3>Importante</h3>
   <p>
     Questo nodo <b>non comanda i rele</b> da solo.
-    Collega ogni uscita carico a qualcosa che possa davvero accendere/spegnere dispositivi (MQTT, Shelly, chiamate Home Assistant, ecc.).
+    Collega ogni uscita carico a qualcosa che possa davvero abilitare/disabilitare dispositivi (MQTT, Shelly, chiamate Home Assistant, ecc.).
   </p>
 
-  <h3>Ingressi</h3>
-  <p>Questo nodo ha 1 ingresso.</p>
-  <dl class="message-properties">
-    <dt>Override manuale (opzionale)</dt>
-    <dd>
-      Invia <code>msg.topic = "load/&lt;name&gt;"</code> e <code>msg.payload = true/false</code> per forzare lo stato desiderato
-      di un carico. Il nuovo stato verra applicato al prossimo ciclo di polling.
-    </dd>
-  </dl>
+		  <h3>Ingressi</h3>
+		  <p>Questo nodo ha 1 ingresso.</p>
+		  <dl class="message-properties">
+		    <dt>Shedding</dt>
+		    <dd>
+	      Questo nodo accetta solo messaggi in formato <b>Telemetria</b> (output del nodo <code>alfasinapsi-telemetry</code> in modalita <i>Telemetria</i>).
+	      Usa <code>msg.payload.cutoff.hasWarning</code> (<code>true</code>/<code>false</code>) per decidere se incrementare o decrementare lo stage.
+	      <p>
+	        Nota: lo <b>stage cambia di 1 per ogni messaggio</b> ricevuto. Quindi la velocita dello shedding dipende dalla frequenza dei messaggi in ingresso
+	        (per esempio dipende dal <i>Poll (ms)</i> del nodo <code>alfasinapsi-telemetry</code>).
+		      </p>
+		    </dd>
+		  </dl>
 
-  <h3>Uscite</h3>
-  <p>
-    Il numero di uscite e' <code>1 + numero di carichi</code>.
-  </p>
-  <ul>
-    <li><b>Uscita 1</b> (<code>alfasinapsi/controller</code>): riepilogo (potenza + stati desiderati)</li>
-    <li><b>Uscite 2..N+1</b>: una uscita per ogni carico configurato (comando booleano)</li>
-    <li><b>Stato connessione</b>: quando cambia lo stato del dispositivo, invia un messaggio su <b>Uscita 1</b> con <code>msg.topic = alfasinapsi/controller/status</code> e <code>msg.status</code> (e <code>msg.payload</code> uguale a <code>msg.status</code>).</li>
-  </ul>
-  <p>
-    Nota: le uscite dei singoli carichi inviano un messaggio solo quando il nodo cambia lo stato desiderato (e quando i timer Min acceso/spento lo permettono).
-    Altrimenti, in quel ciclo, quella uscita non emette nulla.
-  </p>
+	  <h3>Uscite</h3>
+	  <p>
+	    Il numero di uscite e' pari al numero di carichi configurati (minimo 1, per evitare che il nodo sparisca dall'editor).
+	    Ogni uscita corrisponde al carico nella stessa posizione in lista.
+	  </p>
 
-  <h3>msg.status (stato connessione)</h3>
-  <p>I messaggi emessi includono <code>msg.status</code>, con:</p>
-  <ul>
-    <li><code>status.connected</code> (boolean)</li>
-    <li><code>status.connecting</code> (boolean)</li>
-    <li><code>status.error</code> (string|null)</li>
-    <li><code>status.ts</code> (number, epoch ms)</li>
-  </ul>
+	  <h3>Sequenza a stadi</h3>
+	  <p>
+	    Lo stage indica quanti carichi sono in shedding: vengono disabilitati i primi <code>stage</code> carichi in base all'<b>ordine</b> della lista.
+	    Quindi: il primo carico in lista viene shed per primo, l'ultimo viene shed per ultimo (e viene ripristinato per primo durante <code>unshed</code>).
+	  </p>
+	  <p>
+	    I timer <i>Min acceso</i>/<i>Min spento</i> limitano le commutazioni e vengono sempre rispettati.
+	  </p>
 
-  <h3>Messaggio uscita 1</h3>
-  <dl class="message-properties">
-    <dt>msg.topic <span class="property-type">string</span></dt>
-    <dd><code>alfasinapsi/controller</code></dd>
+	  <h3>Messaggio comando per carico</h3>
+	  <dl class="message-properties">
+	    <dt>msg.topic <span class="property-type">string</span></dt>
+	    <dd>Nome del carico (es. <code>Lavastoviglie</code>).</dd>
 
-    <dt>msg.payload <span class="property-type">object</span></dt>
-    <dd>
-      Oggetto riepilogo con:
-      <ul>
-        <li><code>payload.ts</code> (number, epoch ms della lettura)</li>
-        <li><code>payload.messageAtIso</code>, <code>payload.meterReadAtIso</code></li>
-        <li><code>payload.power.importW</code>, <code>payload.power.exportW</code>, <code>payload.power.productionW</code> (Watts)</li>
-        <li><code>payload.cutoff.hasWarning</code>, <code>payload.cutoff.remainingSeconds</code>, <code>payload.cutoff.atIso</code></li>
-        <li><code>payload.mode</code></li>
-        <li><code>payload.loads[]</code> (name, desired, powerW, priority)</li>
-      </ul>
-    </dd>
-  </dl>
-
-  <h3>Messaggio comando per carico</h3>
-  <dl class="message-properties">
-    <dt>msg.topic <span class="property-type">string</span></dt>
-    <dd><code>load/&lt;name&gt;</code></dd>
-
-    <dt>msg.payload <span class="property-type">boolean</span></dt>
-    <dd><code>true</code> per accendere, <code>false</code> per spegnere.</dd>
-
-    <dt>msg.load <span class="property-type">string</span></dt>
-    <dd>Nome del carico (uguale a <code>load/&lt;name&gt;</code>).</dd>
-
-    <dt>msg.reason <span class="property-type">string</span></dt>
-    <dd>
-      Motivo della decisione:
-      <code>surplus</code>, <code>surplus_drop</code>, <code>import_limit</code>, <code>cutoff_notice</code>.
-    </dd>
-
-    <dt>msg.telemetry <span class="property-type">object</span></dt>
-    <dd>Snapshot completo della telemetria usato per la decisione (dettagli tecnici).</dd>
-
-    <dt>msg.status <span class="property-type">object</span></dt>
-    <dd>Stato connessione al dispositivo (vedi <i>msg.status</i> sopra).</dd>
-  </dl>
+	    <dt>msg.payload <span class="property-type">boolean</span></dt>
+	    <dd><code>true</code> = unshed/abilitato, <code>false</code> = shed/disabilitato.</dd>
+	  </dl>
 
   <h3>Configurazione</h3>
   <dl class="message-properties">
-    <dt>Dispositivo <span class="property-type">alfasinapsi-device</span></dt>
-    <dd>Indirizzo IP Sinapsi (impostazioni di comunicazione fisse nel nodo di configurazione).</dd>
-
-    <dt>Poll (ms) <span class="property-type">number</span></dt>
-    <dd>Ogni quanto il controller legge la telemetria e valuta i carichi.</dd>
-
-    <dt>Modalita <span class="property-type">both | surplus | limit</span></dt>
-    <dd>
-      <ul>
-        <li><code>surplus</code>: usa l'export per abilitare/disabilitare i carichi</li>
-        <li><code>limit</code>: spegne carichi quando l'import supera il limite</li>
-        <li><code>both</code>: applica prima <code>limit</code>, poi <code>surplus</code></li>
-      </ul>
-    </dd>
-
-    <dt>Import massimo (W) <span class="property-type">number</span></dt>
-    <dd>Limite di potenza in import usato dalla modalita <code>limit</code>.</dd>
-
-    <dt>Isteresi import (W) <span class="property-type">number</span></dt>
-    <dd>
-      Per evitare commutazioni rapide, lo spegnimento mira a <code>maxImportW - importHysteresisW</code>.
-    </dd>
-
-    <dt>Riserva surplus (W) <span class="property-type">number</span></dt>
-    <dd>Export riservato e non usato per i carichi (margine di sicurezza).</dd>
-
-    <dt>Isteresi surplus (W) <span class="property-type">number</span></dt>
-    <dd>
-      Margine extra usato quando si abilitano i carichi, per evitare commutazioni rapide quando il surplus e' vicino alla potenza del carico.
-    </dd>
-
-    <dt>Distacco <span class="property-type">boolean</span></dt>
-    <dd>Se abilitato, un avviso distacco forza tutti i carichi OFF.</dd>
-
     <dt>Carichi <span class="property-type">list</span></dt>
     <dd>Lista dei carichi (vedi sotto).</dd>
   </dl>
 
-  <h3>Modalita: esempi</h3>
-  <p>
-    Esempi con 2 carichi:
-    <code>boiler</code> = 1000W (priorita 10), <code>ev</code> = 2000W (priorita 50).
-    Riserva surplus = 200W, isteresi surplus = 100W, import massimo = 3000W, isteresi import = 150W.
-  </p>
-
-  <h4>1) Solo surplus (<code>surplus</code>)</h4>
-  <p>
-    Se <code>exportW = 2500</code>, il surplus utilizzabile e' circa <code>2500 - 200 = 2300W</code> (target con isteresi: <code>2400W</code>).
-    Il nodo puo accendere <code>boiler</code> (1000W) ma non <code>ev</code> (totale 3000W &gt; 2400W).
-    Se l'export scende molto, spegne prima i carichi a priorita piu bassa.
-  </p>
-
-  <h4>2) Solo limite import (<code>limit</code>)</h4>
-  <p>
-    Se <code>importW = 3300</code>, lo spegnimento mira a <code>maxImportW - importHysteresisW = 2850W</code>.
-    Il nodo spegne carichi (prima quelli a priorita piu bassa) finche la stima di import rientra sotto ~2850W.
-  </p>
-
-  <h4>3) Surplus + limite import (<code>both</code>)</h4>
-  <p>
-    Il nodo usa entrambe le logiche: prova ad accendere carichi con il surplus, ma se per qualunque motivo l'import supera il limite (stima potenze non perfetta, carichi reali diversi, ecc.),
-    spegne i meno prioritari per rientrare nel limite. In pratica e' la modalita piu “sicura” per evitare picchi di import.
-  </p>
-
-  <h3>Come funziona il controller</h3>
-  <p><b>Terminologia</b></p>
-  <ul>
-    <li><b>Import</b>: potenza prelevata dalla rete (<code>power.importW</code>).</li>
-    <li><b>Export</b>: potenza immessa in rete (<code>power.exportW</code>).</li>
-    <li><b>Surplus</b>: potenza in eccesso disponibile. Qui e' basata su <b>export</b> (eventualmente ridotta da <i>Riserva surplus</i>).</li>
-  </ul>
-  <ul>
-    <li><b>Surplus</b>: usa l'export (<code>power.exportW</code>) per abilitare i carichi.</li>
-    <li><b>Import limit</b>: usa l'import (<code>power.importW</code>) per spegnere carichi quando sopra il limite.</li>
-    <li><b>Distacco</b>: se un avviso distacco e' presente ed e' abilitato, forza tutti i carichi OFF.</li>
-    <li><b>Priorita</b>: numero piu basso = priorita piu alta (si accende prima, si spegne per ultimo).</li>
-  </ul>
-
   <h3>Configurazione carichi</h3>
   <dl class="message-properties">
     <dt>Nome <span class="property-type">string</span></dt>
-    <dd>Identificativo del carico. Usato anche come etichetta di uscita e nel topic per override manuale <code>load/&lt;name&gt;</code>.</dd>
+    <dd>Identificativo del carico. Usato anche come etichetta di uscita e come <code>msg.topic</code> in output.</dd>
 
-    <dt>W <span class="property-type">number</span></dt>
-    <dd>Consumo stimato (Watt). Serve a decidere quanti carichi possono rientrare nel surplus disponibile.</dd>
-
-    <dt>Priorita <span class="property-type">number</span></dt>
-    <dd>Numero piu basso = priorita piu alta (tenuto ON piu a lungo).</dd>
+    <dt>Ordine <span class="property-type">list position</span></dt>
+    <dd>La posizione nella lista determina la priorita (dall'alto verso il basso).</dd>
 
     <dt>Min acceso (s) / Min spento (s) <span class="property-type">number</span></dt>
     <dd>Timer anti-commutazione per evitare accensioni/spegnimenti troppo frequenti.</dd>
@@ -339,9 +166,9 @@
 
 <script type="text/javascript">
   (function () {
-    function loadDefaults() {
-      return { name: "carico", powerW: 800, priority: 50, minOnSec: 0, minOffSec: 0 };
-    }
+	    function loadDefaults() {
+	      return { name: "carico", minOnSec: 0, minOffSec: 0 };
+	    }
 
     function safeParseLoads(value) {
       if (Array.isArray(value)) return value;
@@ -358,65 +185,63 @@
       return (list || []).filter(l => l && l.name);
     }
 
-    RED.nodes.registerType('alfasinapsi-load-controller', {
-      category: 'energy',
-      color: '#00BAFF',
-      defaults: {
-        name: { value: "" },
-        device: { value: "", type: "alfasinapsi-device", required: true },
-        pollInterval: { value: 2000, validate: RED.validators.number() },
-        mode: { value: "both" },
-        maxImportW: { value: 3000, validate: RED.validators.number() },
-        importHysteresisW: { value: 150, validate: RED.validators.number() },
-        surplusReserveW: { value: 200, validate: RED.validators.number() },
-        surplusHysteresisW: { value: 100, validate: RED.validators.number() },
-        forceOffOnCutoff: { value: false },
-        loads: { value: "[]" }
-      },
-      inputs: 1,
-      outputs: 1,
-      outputLabels: function (index) {
-        if (index === 0) return "riepilogo";
-        try {
-          const loads = normaliseLoads(safeParseLoads(this.loads));
-          const l = loads[index - 1];
-          return l ? l.name : ("carico " + index);
-        } catch (e) {
-          return ("carico " + index);
-        }
-      },
-      icon: "font-awesome/fa-toggle-on",
-      label: function () { return this.name || "alfasinapsi controller carichi"; },
-      onadd: function () {
-        try {
-          const loads = normaliseLoads(safeParseLoads(this.loads));
-          this.outputs = 1 + loads.length;
-        } catch (e) {
-          this.outputs = 1;
-        }
-      },
-      oneditprepare: function () {
-        // Migration from older versions (previous property name)
-        if (typeof this.forceOffOnCutoff === "undefined" && typeof this.forceOffOnDistacco !== "undefined") {
-          this.forceOffOnCutoff = this.forceOffOnDistacco;
-        }
-        $("#node-input-forceOffOnCutoff").prop("checked", !!this.forceOffOnCutoff);
-
-        const list = $("#node-input-loads-list");
-        const loads = normaliseLoads(safeParseLoads(this.loads));
+	    RED.nodes.registerType('alfasinapsi-load-controller', {
+	      category: 'energy',
+	      color: '#00BAFF',
+	      defaults: {
+	        name: { value: "" },
+	        loads: { value: "[]" },
+	        outputs: { value: 1 }
+	      },
+	      inputs: 1,
+	      outputs: 1,
+	      outputLabels: function (index) {
+	        try {
+	          const loads = normaliseLoads(safeParseLoads(this.loads));
+	          const l = loads[index];
+	          return l ? l.name : ("carico " + (index + 1));
+	        } catch (e) {
+	          return ("carico " + (index + 1));
+	        }
+	      },
+	      icon: "font-awesome/fa-toggle-on",
+	      label: function () { return this.name || "alfasinapsi controller carichi"; },
+	      onadd: function () {
+	        const updateOutputs = () => {
+	          try {
+	            const loads = normaliseLoads(safeParseLoads(this.loads));
+	            const next = Math.max(1, loads.length);
+	            if (this.outputs !== next) this.outputs = next;
+	            if (Array.isArray(this.wires)) {
+	              while (this.wires.length < this.outputs) this.wires.push([]);
+	            }
+	          } catch (e) {
+	            this.outputs = 1;
+	          }
+	          try {
+	            RED.view?.redraw?.();
+	          } catch (e) {
+	            // ignore
+	          }
+	        };
+	        updateOutputs();
+	        // Defer once so `this.loads` is reliably populated when loading flows at startup.
+	        setTimeout(updateOutputs, 0);
+		      },
+	      oneditprepare: function () {
+	        const list = $("#node-input-loads-list");
+	        const loads = normaliseLoads(safeParseLoads(this.loads));
 
         function writeBack() {
           const items = [];
-          list.editableList('items').each(function (i) {
-            const row = $(this);
-            items.push({
-              name: row.find(".alf-name").val(),
-              powerW: Number(row.find(".alf-power").val()),
-              priority: Number(row.find(".alf-priority").val()),
-              minOnSec: Number(row.find(".alf-minon").val()),
-              minOffSec: Number(row.find(".alf-minoff").val())
-            });
-          });
+		          list.editableList('items').each(function (i) {
+		            const row = $(this);
+		            items.push({
+		              name: row.find(".alf-name").val(),
+		              minOnSec: Number(row.find(".alf-minon").val()),
+		              minOffSec: Number(row.find(".alf-minoff").val())
+		            });
+		          });
           $("#node-input-loads").val(JSON.stringify(normaliseLoads(items)));
         }
 
@@ -424,19 +249,17 @@
           addButton: true,
           removable: true,
           sortable: true,
-          addItem: function (container, i, data) {
-            const d = $.extend(loadDefaults(), data);
-            const row = $('<div class="alfasinapsi-load-row"></div>').appendTo(container);
+		          addItem: function (container, i, data) {
+		            const d = $.extend(loadDefaults(), data);
+		            const row = $('<div class="alfasinapsi-load-row"></div>').appendTo(container);
 
-            $('<input type="text" class="alf-name" placeholder="Nome">').val(d.name).appendTo(row);
-            $('<input type="number" class="alf-power" placeholder="W">').val(d.powerW).appendTo(row);
-            $('<input type="number" class="alf-priority" placeholder="Priorita">').val(d.priority).appendTo(row);
-            $('<input type="number" class="alf-minon" placeholder="Min acceso (s)">').val(d.minOnSec).appendTo(row);
-            $('<input type="number" class="alf-minoff" placeholder="Min spento (s)">').val(d.minOffSec).appendTo(row);
+		            $('<input type="text" class="alf-name" placeholder="Nome">').val(d.name).appendTo(row);
+		            $('<input type="number" class="alf-minon" placeholder="Min acceso (s)">').val(d.minOnSec).appendTo(row);
+		            $('<input type="number" class="alf-minoff" placeholder="Min spento (s)">').val(d.minOffSec).appendTo(row);
 
-            row.find("input").on("change keyup", writeBack);
-            writeBack();
-          },
+	            row.find("input").on("change keyup", writeBack);
+	            writeBack();
+	          },
           removeItem: function () { writeBack(); },
           sortItems: function () { writeBack(); }
         });
@@ -444,14 +267,17 @@
         loads.forEach(l => list.editableList('addItem', l));
         writeBack();
       },
-      oneditsave: function () {
-        try {
-          const loads = normaliseLoads(safeParseLoads($("#node-input-loads").val() || "[]"));
-          this.outputs = 1 + loads.length;
-        } catch (e) {
-          this.outputs = 1;
-        }
-      }
-    });
+	      oneditsave: function () {
+	        try {
+	          const loads = normaliseLoads(safeParseLoads($("#node-input-loads").val() || "[]"));
+	          this.outputs = Math.max(1, loads.length);
+	          if (Array.isArray(this.wires)) {
+	            while (this.wires.length < this.outputs) this.wires.push([]);
+	          }
+	        } catch (e) {
+	          this.outputs = 1;
+	        }
+	      }
+	    });
   })();
 </script>

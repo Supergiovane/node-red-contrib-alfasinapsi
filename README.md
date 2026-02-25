@@ -58,7 +58,7 @@ Output:
   - `msg.payload` (semplificato): potenza/energia (import/export/production), fascia tariffaria, avviso distacco + timestamp
   - `msg.insight` (tecnico): telemetria completa decodificata (include campi extra come fasce di ieri, medie di quarto d'ora, ecc.)
   - `msg.status`: stato connessione corrente
-- Modalita <b>KNX Load Control PIN</b> (ogni 10s):
+- Modalita <b>KNX Load Control PIN</b> (in base a <i>Poll (ms)</i>):
   - `msg.topic = "alfasinapsi/telemetry/knx-load-control-pin"`
   - `msg.payload = "shed" | "unshed"`
   - `msg.shedding = "shed" | "unshed"`
@@ -70,28 +70,30 @@ Output:
 Configurazione:
 
 - `Dispositivo`: IP del tuo Sinapsi (parametri di connessione fissi per stabilita)
-- `Poll (ms)`: ogni quanto il nodo legge i dati
+- `Poll (ms)`: ogni quanto il nodo legge i dati (in modalita <i>Telemetria</i> influenza anche la frequenza dei messaggi; quindi e' importante se a valle hai logiche a stadi)
 - `Solo se cambia`: se abilitato, emette solo quando cambiano i valori principali
 - `Compatibilita`: seleziona <i>Telemetria</i> oppure <i>KNX Load Control PIN</i>
-  - Nota: in modalita <i>KNX Load Control PIN</i> emette ogni 10s (il polling interno viene limitato a 10s e <i>Solo se cambia</i> non si applica).
+  - Nota: in modalita <i>KNX Load Control PIN</i> emette con la stessa frequenza del <i>Poll (ms)</i> (oppure solo al cambio stato se <i>Solo se cambia</i> e' attivo).
 
 ### `alfasinapsi-load-controller`
 
-Legge la telemetria direttamente da Sinapsi Alfa (polling) e decide quali carichi accendere/spegnere.
+Reagisce ai messaggi in formato <b>Telemetria</b> e applica una sequenza a stadi sui carichi configurati usando <code>payload.cutoff.hasWarning</code>.
 
-Uscita 1: riepilogo (`msg.topic = "alfasinapsi/controller"`).  
-Uscite 2..N+1: comando ON/OFF per ogni carico (payload booleano).
+Uscite: una uscita per ogni carico configurato (minimo 1, per evitare che il nodo sparisca dall'editor).
+Ogni uscita emette un comando booleano per quel carico con:
 
-Algoritmo (configurabile):
+- `msg.topic = "<nome carico>"`
+- `msg.payload = true` (unshed/abilitato) oppure `false` (shed/disabilitato)
 
-- **Surplus**: abilita i carichi quando c'e abbastanza **export** verso rete (W).
-- **Limite import**: disabilita i carichi quando **import** supera una soglia (W).
-- **Avviso distacco**: se presente, spegne tutto (forzato).
+Algoritmo:
+
+- Se <code>payload.cutoff.hasWarning = true</code> aumenta lo <b>stage</b> di 1 (fino a N carichi).
+- Se <code>payload.cutoff.hasWarning = false</code> diminuisce lo <b>stage</b> di 1 (fino a 0).
+- Lo stage indica quanti carichi vengono messi in shedding, in base all'<b>ordine</b> della lista (dall'alto verso il basso: shed per primo).
 
 Note:
 
-- I comandi per singolo carico sono `msg.payload = true/false` con `msg.topic = "load/<name>"`.
-- Puoi forzare un carico inviando un messaggio in ingresso con `topic = "load/<name>"` e `payload` booleano.
+- I comandi dei carichi escono solo quando il nodo decide di cambiare stato (shedding/unshedding di quel carico).
 
 ## Dettagli (per utenti inesperti)
 
@@ -119,8 +121,9 @@ In piu:
 Puoi scegliere cosa emettere dall'output con <i>Compatibilita</i>:
 
 - <b>Telemetria</b>: messaggio con misure + dettagli tecnici.
-- <b>KNX Load Control PIN</b>: messaggio `shed/unshed` ogni 10 secondi (compatibile con il nodo KNX Load Control).
-  - Nota: in questa modalita <i>Solo se cambia</i> non si applica e il polling interno viene limitato a 10s (anche se imposti un Poll piu alto).
+- <b>KNX Load Control PIN</b>: messaggio `shed/unshed` con la frequenza del <i>Poll (ms)</i> (compatibile con il nodo KNX Load Control).
+  - Nota: in questa modalita la frequenza dipende da <i>Poll (ms)</i> (e rispetta <i>Solo se cambia</i>).
+  - Nota importante: se colleghi questo output al nodo <code>alfasinapsi-load-controller</code>, la frequenza dei messaggi determina la velocita con cui aumenta/diminuisce lo <i>shedding stage</i>.
 
 Uso tipico:
 
@@ -147,7 +150,7 @@ Struttura del messaggio (modalita <b>Telemetria</b>):
 
 Struttura del messaggio (modalita <b>KNX Load Control PIN</b>):
 
-- `msg.payload = "shed"` se e' presente un avviso distacco imminente, altrimenti `msg.payload = "unshed"` (ogni 10s)
+- `msg.payload = "shed"` se e' presente un avviso distacco imminente, altrimenti `msg.payload = "unshed"` (con la frequenza del <i>Poll (ms)</i>)
 - `msg.shedding` con lo stesso valore (per compatibilita con KNX Load Control)
 
 ## Terminologia (import/export/surplus)
@@ -160,27 +163,20 @@ Questi sono termini standard nel monitoraggio energetico:
 
 ### 3) `alfasinapsi-load-controller` (solo decisioni)
 
-Questo nodo legge la telemetria (fa polling in autonomia) e invia:
+Questo nodo <b>non fa polling</b>. Riceve in ingresso messaggi <b>Telemetria</b> (output del nodo <code>alfasinapsi-telemetry</code> in modalita <i>Telemetria</i>) e usa <code>payload.cutoff.hasWarning</code> per decidere se aumentare o diminuire lo stage. Invia:
 
-- Uscita 1: un **riepilogo** della potenza attuale e dello stato del controller
-- Uscite 2..N+1: un comando booleano per ogni carico configurato
+- Una uscita per ogni carico configurato, che emette <code>true/false</code> (unshed/shed) con <code>msg.topic</code> uguale al nome del carico.
 
 Importante: questo nodo **non comanda i relè da solo**. Devi collegare ogni uscita carico a qualcosa che accende/spegne davvero i dispositivi (per esempio MQTT, nodi Shelly, chiamate di servizio Home Assistant, ecc.).
 
+Nota importante: lo stage cambia di 1 per ogni messaggio ricevuto, quindi la velocita della sequenza dipende dalla frequenza dei messaggi in ingresso (per esempio dal <i>Poll (ms)</i> della telemetria).
+
 Come configurare i carichi:
 
-- **Nome**: usato come etichetta di uscita e per l'override manuale (`load/<name>`)
-- **W**: consumo atteso del carico (serve a stimare quanti carichi possono rientrare nel surplus disponibile)
-- **Priorita**: numero piu basso = priorita piu alta (tenuto ON piu a lungo)
+- **Nome**: usato come etichetta di uscita e come `msg.topic` in output
+- **Ordine in lista**: la posizione nella lista determina la priorita (dall'alto verso il basso)
 - **Min acceso (s)**: tempo minimo in cui il carico resta acceso prima di poter essere spento
 - **Min spento (s)**: tempo minimo in cui il carico resta spento prima di poter essere acceso
-
-Override manuale (opzionale):
-
-Invia un messaggio all'ingresso del nodo:
-
-- `msg.topic = "load/<name>"`
-- `msg.payload = true` (force desired ON) or `false` (force desired OFF)
 
 ## Problemi di connessione? Ricorda
 

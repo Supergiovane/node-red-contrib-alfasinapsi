@@ -1,24 +1,106 @@
 [
   {
+    "id": "9d9c4e4a1f2b93b1",
+    "type": "tab",
+    "label": "Sinapsi Alfa - Load Controller",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "9c9489c89da27f1c",
+    "type": "alfasinapsi-telemetry",
+    "z": "9d9c4e4a1f2b93b1",
+    "name": "Telemetria",
+    "device": "4b84b99c88bf5850",
+    "pollInterval": 10000,
+    "sendOnChange": false,
+    "compatibility": "telemetry",
+    "x": 210,
+    "y": 160,
+    "wires": [
+      [
+        "3b0c5c74d2e9cf61"
+      ]
+    ]
+  },
+  {
+    "id": "c7f8a2f0b2b6a6c1",
+    "type": "comment",
+    "z": "9d9c4e4a1f2b93b1",
+    "name": "Test rapido (senza dispositivo): usa gli Inject sotto per simulare Telemetria cutoff.hasWarning true/false",
+    "info": "",
+    "x": 340,
+    "y": 220,
+    "wires": []
+  },
+  {
+    "id": "6a2e42c0f6c6f6d3",
+    "type": "inject",
+    "z": "9d9c4e4a1f2b93b1",
+    "name": "SIM shed (telemetry)",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "alfasinapsi/telemetry",
+    "payload": "{\"cutoff\":{\"hasWarning\":true,\"remainingSeconds\":60,\"atIso\":\"2026-02-25T12:00:00.000Z\"}}",
+    "payloadType": "json",
+    "x": 190,
+    "y": 260,
+    "wires": [
+      [
+        "3b0c5c74d2e9cf61"
+      ]
+    ]
+  },
+  {
+    "id": "c6b7b5d3a2b79f12",
+    "type": "inject",
+    "z": "9d9c4e4a1f2b93b1",
+    "name": "SIM unshed (telemetry)",
+    "props": [
+      {
+        "p": "payload"
+      },
+      {
+        "p": "topic",
+        "vt": "str"
+      }
+    ],
+    "repeat": "",
+    "crontab": "",
+    "once": false,
+    "onceDelay": 0.1,
+    "topic": "alfasinapsi/telemetry",
+    "payload": "{\"cutoff\":{\"hasWarning\":false,\"remainingSeconds\":null,\"atIso\":null}}",
+    "payloadType": "json",
+    "x": 200,
+    "y": 300,
+    "wires": [
+      [
+        "3b0c5c74d2e9cf61"
+      ]
+    ]
+  },
+  {
     "id": "3b0c5c74d2e9cf61",
     "type": "alfasinapsi-load-controller",
     "z": "9d9c4e4a1f2b93b1",
     "name": "Controllo Carichi",
-    "device": "4b84b99c88bf5850",
-    "pollInterval": "2000",
-    "mode": "both",
-    "maxImportW": "3000",
-    "importHysteresisW": "150",
-    "surplusReserveW": "200",
-    "surplusHysteresisW": "100",
-    "forceOffOnCutoff": false,
-    "loads": "[{\"name\":\"Lavastoviglie\",\"powerW\":1200,\"priority\":80,\"minOnSec\":60,\"minOffSec\":60},{\"name\":\"Forno\",\"powerW\":800,\"priority\":60,\"minOnSec\":30,\"minOffSec\":30}]",
-    "x": 230,
-    "y": 140,
+    "loads": "[{\"name\":\"Lavastoviglie\",\"minOnSec\":60,\"minOffSec\":60},{\"name\":\"Forno\",\"minOnSec\":30,\"minOffSec\":30}]",
+    "outputs": 2,
+    "x": 450,
+    "y": 160,
     "wires": [
-      [
-        "da6a7bd0f2bbf2ce"
-      ],
       [
         "25e8e9e02a0d0f59"
       ],
@@ -26,23 +108,6 @@
         "b0e4d11fbe1739c7"
       ]
     ]
-  },
-  {
-    "id": "da6a7bd0f2bbf2ce",
-    "type": "debug",
-    "z": "9d9c4e4a1f2b93b1",
-    "name": "Sommario",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "payload",
-    "targetType": "msg",
-    "statusVal": "",
-    "statusType": "auto",
-    "x": 470,
-    "y": 120,
-    "wires": []
   },
   {
     "id": "25e8e9e02a0d0f59",
@@ -57,8 +122,8 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 470,
-    "y": 160,
+    "x": 700,
+    "y": 140,
     "wires": []
   },
   {
@@ -74,138 +139,13 @@
     "targetType": "full",
     "statusVal": "",
     "statusType": "auto",
-    "x": 450,
-    "y": 200,
-    "wires": []
-  },
-  {
-    "id": "9b56397be30223ab",
-    "type": "knxUltimateLoadControl",
-    "z": "9d9c4e4a1f2b93b1",
-    "server": "a01c5d80.1bbb78",
-    "name": "",
-    "topic": "",
-    "dpt": "",
-    "wattLimit": 3000,
-    "sheddingCheckInterval": 15,
-    "sheddingRestoreDelay": 60,
-    "GA1": "",
-    "DPT1": "",
-    "Name1": "",
-    "autoRestore1": true,
-    "MonitorGA1": "",
-    "MonitorDPT1": "",
-    "MonitorName1": "",
-    "GA2": "",
-    "DPT2": "",
-    "Name2": "",
-    "autoRestore2": true,
-    "MonitorGA2": "",
-    "MonitorDPT2": "",
-    "MonitorName2": "",
-    "GA3": "",
-    "DPT3": "",
-    "Name3": "",
-    "autoRestore3": true,
-    "MonitorGA3": "",
-    "MonitorDPT3": "",
-    "MonitorName3": "",
-    "GA4": "",
-    "DPT4": "",
-    "Name4": "",
-    "autoRestore4": true,
-    "MonitorGA4": "",
-    "MonitorDPT4": "",
-    "MonitorName4": "",
-    "GA5": "",
-    "DPT5": "",
-    "Name5": "",
-    "autoRestore5": true,
-    "MonitorGA5": "",
-    "MonitorDPT5": "",
-    "MonitorName5": "",
-    "x": 490,
-    "y": 280,
-    "wires": [
-      []
-    ]
-  },
-  {
-    "id": "94013618e42cb337",
-    "type": "comment",
-    "z": "9d9c4e4a1f2b93b1",
-    "name": "Compatibilità nativa con il controllo carichi di KNX-Ultimate",
-    "info": "",
-    "x": 350,
-    "y": 240,
-    "wires": []
-  },
-  {
-    "id": "9c9489c89da27f1c",
-    "type": "alfasinapsi-telemetry",
-    "z": "9d9c4e4a1f2b93b1",
-    "name": "",
-    "device": "4b84b99c88bf5850",
-    "pollInterval": 2000,
-    "sendOnChange": false,
-    "compatibility": "knxLoadControlPin",
-    "x": 240,
-    "y": 280,
-    "wires": [
-      [
-        "9b56397be30223ab"
-      ]
-    ]
-  },
-  {
-    "id": "bb19afc40c819f7f",
-    "type": "comment",
-    "z": "9d9c4e4a1f2b93b1",
-    "name": "Può comandare qualsiasi carico, Shelly, Sonoff, Matter, ecc...",
-    "info": "",
-    "x": 360,
-    "y": 80,
+    "x": 670,
+    "y": 180,
     "wires": []
   },
   {
     "id": "4b84b99c88bf5850",
     "type": "alfasinapsi-device",
     "host": "192.168.1.186"
-  },
-  {
-    "id": "a01c5d80.1bbb78",
-    "type": "knxUltimate-config",
-    "host": "192.168.1.15",
-    "port": "3671",
-    "physAddr": "15.15.208",
-    "hostProtocol": "TunnelUDP",
-    "suppressACKRequest": false,
-    "csv": "\"Group name\"\t\"Address\"\t\"Central\"\t\"Unfiltered\"\t\"Description\"\t\"DatapointType\"\t\"Security\"\n\"Attuatori luci\"\t\"0/-/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Luci primo piano\"\t\"0/0/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Luce camera da letto\"\t\"0/0/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce loggia camera da letto\"\t\"0/0/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce camera armadi (switch)\"\t\"0/0/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce bagno grande (switch)\"\t\"0/0/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce loggia bagno grande\"\t\"0/0/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce specchio bagno grande (switch)\"\t\"0/0/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce lavanderia\"\t\"0/0/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce specchio lavanderia (switch)\"\t\"0/0/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce studio\"\t\"0/0/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Plafoniera soggiorno (switch)\"\t\"0/0/10\"\t\"\"\t\"\"\t\"Soggiorno Plafoniera\"\t\"DPST-1-1\"\t\"Auto\"\n\"Applique soggiorno (switch)\"\t\"0/0/11\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce loggia soggiorno cucina\"\t\"0/0/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce cucina\"\t\"0/0/13\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Pensili cucina (switch)\"\t\"0/0/14\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Luce corridoio\"\t\"0/0/15\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"LED scala\"\t\"0/0/16\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Applique soggiorno brightness value\"\t\"0/0/17\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce specchio bagno grande(dim)\"\t\"0/0/18\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Plafoniera soggiorno brightness value\"\t\"0/0/19\"\t\"\"\t\"\"\t\"Soggiorno Plafoniera\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce specchio lavanderia (dim)\"\t\"0/0/20\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"LED cambiacolori RGB scala\"\t\"0/0/21\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce specchio bagno grande brightness value\"\t\"0/0/22\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Plafoniera soggiorno (dim)\"\t\"0/0/23\"\t\"\"\t\"\"\t\"Soggiorno Plafoniera\"\t\"DPST-3-7\"\t\"Auto\"\n\"Applique soggiorno (dim)\"\t\"0/0/24\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-3-7\"\t\"Auto\"\n\"Luce specchio lavanderia brightness value\"\t\"0/0/25\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Plafoniera soggiorno switch Stato\"\t\"0/0/26\"\t\"\"\t\"\"\t\"Soggiorno Plafoniera\"\t\"DPST-1-1\"\t\"Auto\"\n\"Applique soggiorno switch Stato\"\t\"0/0/27\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce camera armadi (switch) Stato\"\t\"0/0/28\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce bagno grande (switch) Stato\"\t\"0/0/29\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce specchio bagno grande Stato\"\t\"0/0/30\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce specchio lavanderia Stato\"\t\"0/0/31\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce lavanderia Stato\"\t\"0/0/32\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Plafoniera soggiorno (colore)\"\t\"0/0/33\"\t\"\"\t\"\"\t\"Soggiorno Plafoniera\"\t\"DPST-232-600\"\t\"Auto\"\n\"Plafoniera soggiorno brightness value Stato\"\t\"0/0/34\"\t\"\"\t\"\"\t\"Soggiorno Plafoniera\"\t\"DPST-5-1\"\t\"Auto\"\n\"Applique soggiorno brightness value Stato\"\t\"0/0/35\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce bagno grande (brightness value)\"\t\"0/0/36\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce bagno grande (brightness value) Stato\"\t\"0/0/37\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce bagno grande (dim)\"\t\"0/0/38\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Luce bagno grande (color)\"\t\"0/0/39\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luce bagno grande (color) Stato\"\t\"0/0/40\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Applique soggiorno (color)\"\t\"0/0/41\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-232-600\"\t\"Auto\"\n\"Applique soggiorno (color) Stato\"\t\"0/0/42\"\t\"\"\t\"\"\t\"Soggiorno Applique\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luce sgabuzzino primo piano\"\t\"0/0/43\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Pensili cucina (switch) Stato\"\t\"0/0/44\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Luce cucina Stato\"\t\"0/0/45\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Scimmia (RGB)\"\t\"0/0/46\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luce camera armadi (color)\"\t\"0/0/47\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luce camera armadi (color) Stato\"\t\"0/0/48\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luci piano terra\"\t\"0/1/-\"\t\"\"\t\"\"\t\"Luci piano terra\"\t\"\"\t\"Auto\"\n\"Luce corridoio e scala\"\t\"0/1/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce tavolo taverna\"\t\"0/1/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Applique taverna\"\t\"0/1/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce cameretta\"\t\"0/1/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce bagno piano terra\"\t\"0/1/4\"\t\"\"\t\"\"\t\"Bagno piano terra Luce\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce timer garage (ON)\"\t\"0/1/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luci marciapiedi giardino\"\t\"0/1/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Fari allarme giardino\"\t\"0/1/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Controsoffitto taverna (switch)\"\t\"0/1/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Controsoffitto taverna (dim)\"\t\"0/1/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Controsoffitto scena cambio colori taverna (ON/OFF)\"\t\"0/1/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"IR Luci taverna (ON/OFF)\"\t\"0/1/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce tavolo taverna (dim)\"\t\"0/1/20\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Luce permanente garage (switch)\"\t\"0/1/21\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Controsoffitto taverna brightness value\"\t\"0/1/22\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Controsoffitto taverna (switch) Stato\"\t\"0/1/23\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Controsoffitto taverna brightness value Stato\"\t\"0/1/24\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Luce tavolo taverna Stato\"\t\"0/1/25\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce sala tecnica\"\t\"0/1/26\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce sala tecnica Stato\"\t\"0/1/27\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce permanente garage (switch) Stato\"\t\"0/1/28\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce tavolo taverna (color)\"\t\"0/1/29\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luce tavolo taverna (color) Stato\"\t\"0/1/30\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n\"Luci viale (switch)\"\t\"0/1/31\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luci viale (switch) Stato\"\t\"0/1/32\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luci viale (dim)\"\t\"0/1/33\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Luci viale (color loop)\"\t\"0/1/34\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luci viale (trigger flash)\"\t\"0/1/35\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-17\"\t\"Auto\"\n\"Piantana Soggiorno switch (ON/OFF)\"\t\"0/1/36\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Luce Divano switch (ON/OFF)\"\t\"0/1/37\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Heating\"\t\"1/-/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Termostato lavanderia\"\t\"1/0/-\"\t\"\"\t\"\"\t\"Termostato lavanderia\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante lavanderia\"\t\"1/0/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura lavanderia\"\t\"1/0/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo lavanderia\"\t\"1/0/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Umidit  lavanderia\"\t\"1/0/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Temperatura di rugiada lavanderia\"\t\"1/0/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Indicazione attivazione caldaia lavanderia\"\t\"1/0/5\"\t\"\"\t\"\"\t\"Indicazione attivazione caldaia\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint lavanderia Stato\"\t\"1/0/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight lavanderia\"\t\"1/0/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status lavanderia\"\t\"1/0/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTLavanderia\"\t\"1/0/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Setpoint lavanderia\"\t\"1/0/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato studio\"\t\"1/1/-\"\t\"\"\t\"\"\t\"Termostato studio\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante studio\"\t\"1/1/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura studio\"\t\"1/1/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo studio\"\t\"1/1/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Umidit  studio\"\t\"1/1/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Temperatura di rugiada studio\"\t\"1/1/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Indicazione attivazione caldaia studio\"\t\"1/1/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint studio Stato\"\t\"1/1/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight studio\"\t\"1/1/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status studio\"\t\"1/1/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTStudio\"\t\"1/1/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Setpoint studio\"\t\"1/1/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato camera da letto\"\t\"1/2/-\"\t\"\"\t\"\"\t\"Termostato camera da letto\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante camera da letto\"\t\"1/2/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura camera da letto\"\t\"1/2/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo camera da letto\"\t\"1/2/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Temperatura di rugiada camera da letto\"\t\"1/2/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Umidit  camera da letto\"\t\"1/2/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Indicazione attivazione caldaia camera da letto\"\t\"1/2/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint camera da letto Stato\"\t\"1/2/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight camera da letto\"\t\"1/2/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status camera da letto\"\t\"1/2/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTCameraDaLetto\"\t\"1/2/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Setpoint camera da letto\"\t\"1/2/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"TestoDiagnosticoMDTTaverna\"\t\"1/2/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Termostato camera armadi\"\t\"1/3/-\"\t\"\"\t\"\"\t\"Termostato camera armadi\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante camera armadi\"\t\"1/3/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura camera armadi\"\t\"1/3/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo camera armadi\"\t\"1/3/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Temperatura di rugiada camera armadi\"\t\"1/3/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Umidit  camera armadi\"\t\"1/3/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Indicazione attivazione caldaia camera armadi\"\t\"1/3/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint camera armadi Stato\"\t\"1/3/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight camera armadi\"\t\"1/3/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status camera armadi\"\t\"1/3/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTCameraArmadi\"\t\"1/3/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Setpoint camera armadi\"\t\"1/3/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato bagno grande\"\t\"1/4/-\"\t\"\"\t\"\"\t\"Termostato bagno grande\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante bagno grande\"\t\"1/4/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura bagno grande\"\t\"1/4/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo bagno grande\"\t\"1/4/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Temperatura di rugiada bagno grande\"\t\"1/4/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Umidit  bagno grande\"\t\"1/4/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Indicazione attivazione caldaia bagno grande\"\t\"1/4/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint bagno grande Stato\"\t\"1/4/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight bagno grande\"\t\"1/4/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status bagno grande\"\t\"1/4/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTBagnoGrande\"\t\"1/4/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Setpoint bagno grande\"\t\"1/4/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato soggiorno-garage e funzioni generali termostati\"\t\"1/5/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante soggiorno\"\t\"1/5/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura soggiorno\"\t\"1/5/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo soggiorno\"\t\"1/5/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"RTC Status soggiorno\"\t\"1/5/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Setpoint soggiorno\"\t\"1/5/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Indicazione attivazione caldaia soggiorno\"\t\"1/5/5\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Setpoint soggiorno Stato\"\t\"1/5/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Temperatura di rugiada soggiorno\"\t\"1/5/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Umidit  soggiorno\"\t\"1/5/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Backlight soggiorno\"\t\"1/5/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Termostato Abitazione primo piano Modo operativo\"\t\"1/5/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTSoggiorno\"\t\"1/5/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Temperatura garage\"\t\"1/5/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato Abitazione primo piano Setpoint Stato\"\t\"1/5/13\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato Abitazione primo piano RTC Stato\"\t\"1/5/14\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Termostato cucina\"\t\"1/6/-\"\t\"\"\t\"\"\t\"Termostato cucina\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante cucina\"\t\"1/6/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura cucina\"\t\"1/6/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo cucina\"\t\"1/6/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Temperatura di rugiada cucina\"\t\"1/6/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Umidit  cucina\"\t\"1/6/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Indicazione attivazione caldaia cucina\"\t\"1/6/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint cucina Stato\"\t\"1/6/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight cucina\"\t\"1/6/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status cucina\"\t\"1/6/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"TestoDiagnosticoMDTCucina\"\t\"1/6/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Setpoint cucina\"\t\"1/6/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Termostato taverna\"\t\"1/7/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Grandezza regolatrice costante taverna\"\t\"1/7/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura taverna\"\t\"1/7/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Modo operativo taverna\"\t\"1/7/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Temperatura di rugiada taverna\"\t\"1/7/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Umidit  taverna\"\t\"1/7/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-7\"\t\"Auto\"\n\"Indicazione attivazione caldaia taverna\"\t\"1/7/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Setpoint taverna Stato\"\t\"1/7/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Backlight taverna\"\t\"1/7/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RTC Status taverna\"\t\"1/7/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-20-102\"\t\"Auto\"\n\"Setpoint taverna\"\t\"1/7/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Ingressi logici\"\t\"2/-/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Comandi\"\t\"2/1/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Pala soggiorno (VIRTUAL ON/OFF)\"\t\"2/1/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Richiedi assistenza medica (ON/OFF)\"\t\"2/1/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Telecomando porta blindata e cancelletto (VIRTUAL ON)\"\t\"2/1/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Telecomando garage piccolo (VIRTUAL ON/OFF)\"\t\"2/1/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Telecomando garage grande (VIRTUAL ON/OFF)\"\t\"2/1/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Telecomando sbarre (VIRTUAL ON/OFF)\"\t\"2/1/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Comando ventilazione 1 (VIRTUAL ON/OFF)\"\t\"2/1/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Comando ventilazione 2 (VIRTUAL ON/OFF)\"\t\"2/1/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Spegni tutto tranne soggiorno e cucina Switch (VIRTUAL ON)\"\t\"2/1/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Scenari Soggiorno\"\t\"2/1/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-18-1\"\t\"Auto\"\n\"Simulazione Presenza (VIRTUAL ON/OFF)\"\t\"2/1/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Pala soggiorno Speed (VIRTUAL 0/1/2)\"\t\"2/1/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-100\"\t\"Auto\"\n\"Pala soggiorno busy Stato (VIRTUAL 0/1/2)\"\t\"2/1/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-100\"\t\"Auto\"\n\"Richiusura automatica Garage e Sbarre dopo transito (ON/OFF)\"\t\"2/1/13\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Apertura garage piccolo + sbarre con richiusura automatica da esterno (ON)\"\t\"2/1/14\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Apertura garage grande + sbarre con richiusura automatica da esterno (ON)\"\t\"2/1/15\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RF Cucina luce (ON)\"\t\"2/1/16\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"RF Cucina pensili (ON)\"\t\"2/1/17\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"RF Cucina corrente (ON)\"\t\"2/1/18\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"RF Cucina acqua logge (ON)\"\t\"2/1/19\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"RF Cucina persiana finestra (ON)\"\t\"2/1/20\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Spegni tutto DIM (VIRTUAL ON)\"\t\"2/1/21\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Telecomando RF Jung Plafoniera Soggiorno (VIRTUAL ON)\"\t\"2/1/22\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Comando prepara telo proiettore e taverna per proiezione (VIRTUAL ON/OFF)\"\t\"2/1/23\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Comando pala camera letto  (VIRTUAL ON/OFF)\"\t\"2/1/24\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Posta presente\"\t\"2/1/25\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"RF Comando pala timer camera letto\"\t\"2/1/26\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-4\"\t\"Auto\"\n\"Comando pala camera letto  (VIRTUAL OFF BY DIM)\"\t\"2/1/27\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Pala camera da letto Speed (VIRTUAL 0/1/2)\"\t\"2/1/28\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-100\"\t\"Auto\"\n\"Consenti Automazioni Gatto (ON/OFF) Node-Red\"\t\"2/1/29\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-3\"\t\"Auto\"\n\"Veneziane scala chiudi (ON)\"\t\"2/1/32\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-10\"\t\"Auto\"\n\"Veneziane scala apri (ON)\"\t\"2/1/33\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-10\"\t\"Auto\"\n\"Apertura garage piccolo + sbarre con richiusura automatica da interno (ON)\"\t\"2/1/34\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Apertura garage grande + sbarre con richiusura automatica da interno (ON)\"\t\"2/1/35\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Multimedia\"\t\"2/2/-\"\t\"\"\t\"\"\t\"Multimedia\"\t\"\"\t\"Auto\"\n\"Massimo arrivato/partito da casa (ON/OFF)\"\t\"2/2/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Zona1 Volume (DIM)\"\t\"2/2/1\"\t\"\"\t\"\"\t\"Zona2 Volume\"\t\"DPST-3-7\"\t\"Auto\"\n\"Track +\"\t\"2/2/2\"\t\"\"\t\"\"\t\"iTunes Track +\"\t\"DPST-1-1\"\t\"Auto\"\n\"Zona 1 Play/Pause (ON/OFF)\"\t\"2/2/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Stato casa\"\t\"2/2/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Chiara arrivata/partita da casa (ON/OFF)\"\t\"2/2/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Track -\"\t\"2/2/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-3-7\"\t\"Auto\"\n\"Luci Soffuse (ON/OFF)\"\t\"2/2/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Zona1 Playlist + (ON)\"\t\"2/2/9\"\t\"\"\t\"\"\t\"Zona2 Source\"\t\"DPST-1-1\"\t\"Auto\"\n\"Messaggio di testo 1\"\t\"2/2/10\"\t\"\"\t\"\"\t\"Messaggio di testo 1\"\t\"DPST-16-1\"\t\"Auto\"\n\"Messaggio di testo 2\"\t\"2/2/11\"\t\"\"\t\"\"\t\"Messaggio di testo 2\"\t\"DPST-16-0\"\t\"Auto\"\n\"Data\"\t\"2/2/12\"\t\"\"\t\"\"\t\"Data\"\t\"DPST-11-1\"\t\"Auto\"\n\"Ora\"\t\"2/2/13\"\t\"\"\t\"\"\t\"Ora\"\t\"DPT-10\"\t\"Auto\"\n\"Meteo\"\t\"2/3/-\"\t\"\"\t\"\"\t\"Meteo\"\t\"\"\t\"Auto\"\n\"Pioggia (ON/OFF)\"\t\"2/3/0\"\t\"\"\t\"\"\t\"Pioggia\"\t\"DPST-1-10\"\t\"Auto\"\n\"Temperatura esterna\"\t\"2/3/1\"\t\"\"\t\"\"\t\"Temperatura esterna\"\t\"DPST-9-1\"\t\"Auto\"\n\"Luminosit  esterna\"\t\"2/3/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Velocit  vento\"\t\"2/3/3\"\t\"\"\t\"\"\t\"\"\t\"DPT-9\"\t\"Auto\"\n\"Notte (ON/OFF)\"\t\"2/3/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Vento forte (ON/OFF)\"\t\"2/3/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Vibrazione tendone (ON/OFF)\"\t\"2/3/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Temperatura finestrone scale\"\t\"2/3/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-1\"\t\"Auto\"\n\"Luminosit  finestrone scale\"\t\"2/3/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"CO2 Primo Piano ppm\"\t\"2/3/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-8\"\t\"Auto\"\n\"VOC Primo Piano ug/m3\"\t\"2/3/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-30\"\t\"Auto\"\n\"CO2 Piano Terra ppm\"\t\"2/3/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-8\"\t\"Auto\"\n\"VOC Piano Terra ug/m3\"\t\"2/3/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-8\"\t\"Auto\"\n\"Power metering\"\t\"2/4/-\"\t\"\"\t\"\"\t\"Power metering\"\t\"\"\t\"Auto\"\n\"Wh Lavatrice primo piano\"\t\"2/4/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Active Power Total 1.1.50 Energy actuator primo piano\"\t\"2/4/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Consumo TOTALE (NodeRed)\"\t\"2/4/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Forno\"\t\"2/4/3\"\t\"\"\t\"\"\t\"mAh Forno\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Lavastoviglie\"\t\"2/4/4\"\t\"\"\t\"\"\t\"mAh Lavastoviglie\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Active Power Total 1.1.49 Energy actuator piano terra\"\t\"2/4/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Tensione 220v presente Stato (ON/OFF)\"\t\"2/4/6\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Wh Active Power Total 1.1.53 Energy actuator primo piano\"\t\"2/4/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh AC Essential BUS\"\t\"2/4/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Prese e Luci Primo Piano\"\t\"2/4/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Prese e Luci Piano Terra\"\t\"2/4/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Wh Lavatrice piano terra\"\t\"2/4/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Solare Kw produzione istantanea inverter (NodeRed)\"\t\"2/4/13\"\t\"\"\t\"\"\t\"\"\t\"DPST-14-56\"\t\"Auto\"\n\"Solare % vendita istantanea a gestore (NodeRed)\"\t\"2/4/14\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Solare % autoconsumo (NodeRed)\"\t\"2/4/15\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Solare % acquisto istantaneo da gestore (NodeRed)\"\t\"2/4/16\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Sensori KNX\"\t\"2/5/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Camera armadi lux\"\t\"2/5/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Bagno grande output - light\"\t\"2/5/1\"\t\"\"\t\"\"\t\"A seconda della modalit  del sistema di allarme, accendo la luce o l'aplque dello specchio.\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavanderit output - light\"\t\"2/5/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Camera da letto IR LOCK\"\t\"2/5/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Camera armadi IR LOCK\"\t\"2/5/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Bagno grande IR LOCK\"\t\"2/5/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavanderia IR LOCK\"\t\"2/5/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Studio IR LOCK\"\t\"2/5/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Soggiorno IR LOCK\"\t\"2/5/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Cucina IR LOCK\"\t\"2/5/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Corridoio primo piano IR LOCK\"\t\"2/5/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Taverna IR LOCK\"\t\"2/5/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Cameretta IR LOCK\"\t\"2/5/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Bagno piano terra IR LOCK\"\t\"2/5/13\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Corridoio piano terra IR LOCK\"\t\"2/5/14\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Sala tecnica presenza\"\t\"2/5/15\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Camera letto lux\"\t\"2/5/16\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Bagno grande lux\"\t\"2/5/17\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Lavanderia lux\"\t\"2/5/18\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Studio lux\"\t\"2/5/19\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Soggiorno lux\"\t\"2/5/20\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Cucina lux\"\t\"2/5/21\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Taverna lux\"\t\"2/5/22\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Microonde Nord Attraversamento cortile (impulso)\"\t\"2/5/23\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Camera da letto presenza\"\t\"2/5/49\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Camera armadi presenza\"\t\"2/5/50\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Studio presenza\"\t\"2/5/51\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Bagno grande presenza\"\t\"2/5/52\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavanderia presenza\"\t\"2/5/53\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Cucina presenza\"\t\"2/5/54\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Soggiorno presenza\"\t\"2/5/55\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Corridoio primo piano presenza\"\t\"2/5/56\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Taverna presenza\"\t\"2/5/57\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Cameretta presenza\"\t\"2/5/58\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Bagno piano terra presenza\"\t\"2/5/59\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Corridoio e scale lux\"\t\"2/5/61\"\t\"\"\t\"\"\t\"\"\t\"DPST-9-4\"\t\"Auto\"\n\"Antifurto\"\t\"2/6/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"ALLARME INCENDIO Stato (ON)\"\t\"2/6/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Timer AutoArm attivo (ON/OFF)\"\t\"2/6/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Antifurto Internal Set (ON/OFF)\"\t\"2/6/3\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Antifurto Internal Set Stato\"\t\"2/6/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Sospendi annunci TTS (ON/OFF)\"\t\"2/6/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Antifurto Away Stato (ON/OFF)\"\t\"2/6/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Elenco persiane aperte\"\t\"2/6/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Elenco finestre aperte\"\t\"2/6/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Antifurto ALLARME AWAY Stato (ON/OFF)\"\t\"2/6/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Elenco ingressi aperti\"\t\"2/6/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-0\"\t\"Auto\"\n\"Antifurto ALLARME NOTTE Stato\"\t\"2/6/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Antifurto Comando Arma(ON) Disarma (OFF)\"\t\"2/6/13\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Antifurto Zone\"\t\"2/7/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Scatola elettrica giardino nord est (N)\"\t\"2/7/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Perimetro Nord (A)\"\t\"2/7/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Perimetro Est (A)\"\t\"2/7/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Perimetro Sud (A)\"\t\"2/7/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Perimetro Ovest (A)\"\t\"2/7/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Sbarre (N)\"\t\"2/7/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Cancello (N)\"\t\"2/7/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Garage grande (N)\"\t\"2/7/13\"\t\"\"\t\"\"\t\"Garage grande\"\t\"DPST-1-1\"\t\"Auto\"\n\"Garage piccolo (N)\"\t\"2/7/14\"\t\"\"\t\"\"\t\"Garage piccolo\"\t\"DPST-1-1\"\t\"Auto\"\n\"Porta REI garage (N)\"\t\"2/7/15\"\t\"\"\t\"\"\t\"Porta REI garage\"\t\"DPST-1-1\"\t\"Auto\"\n\"Porta blindata (N)\"\t\"2/7/16\"\t\"\"\t\"\"\t\"Porta blindata\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestre garage (A)\"\t\"2/7/17\"\t\"\"\t\"\"\t\"Finestre garage\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana finestra camera da letto (N)\"\t\"2/7/18\"\t\"\"\t\"\"\t\"Persiana finestra camera da letto\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana bagno piano terra (N)\"\t\"2/7/19\"\t\"\"\t\"\"\t\"Persiana bagno piano terra\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana balcone camera da letto (N)\"\t\"2/7/20\"\t\"\"\t\"\"\t\"Persiana loggia camera da letto\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestra bagno piano terra (A)\"\t\"2/7/21\"\t\"\"\t\"\"\t\"Finestra bagno piano terra\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana cameretta piano terra (N)\"\t\"2/7/22\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestra camera armadi (A)\"\t\"2/7/23\"\t\"\"\t\"\"\t\"Finestra camera armadi\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana camera armadi (N)\"\t\"2/7/24\"\t\"\"\t\"\"\t\"Finestra camera armadi\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestra bagno grande (A)\"\t\"2/7/25\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana bagno grande (N)\"\t\"2/7/26\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestra lavanderia (A)\"\t\"2/7/27\"\t\"\"\t\"\"\t\"Finestra lavanderia\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana lavanderia (N)\"\t\"2/7/28\"\t\"\"\t\"\"\t\"Persiana lavanderia\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestra studio (A)\"\t\"2/7/29\"\t\"\"\t\"\"\t\"Finestra studio\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana studio (N)\"\t\"2/7/30\"\t\"\"\t\"\"\t\"Persiana studio\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestre soggiorno (A)\"\t\"2/7/31\"\t\"\"\t\"\"\t\"Finestre soggiorno\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestra cameretta piano terra (A)\"\t\"2/7/33\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiane taverna (N)\"\t\"2/7/34\"\t\"\"\t\"\"\t\"Persiane tavernetta\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana balcone soggiorno (N)\"\t\"2/7/35\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestre cucina (A)\"\t\"2/7/36\"\t\"\"\t\"\"\t\"Finestre cucina\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana finestra cucina (N)\"\t\"2/7/37\"\t\"\"\t\"\"\t\"\n\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestre taverna (A)\"\t\"2/7/38\"\t\"\"\t\"\"\t\"Finestre tavernetta\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana balcone cucina (N)\"\t\"2/7/39\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Finestra ingresso (A)\"\t\"2/7/40\"\t\"\"\t\"\"\t\"Finestra ingresso\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana ingresso (N)\"\t\"2/7/41\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Finestre camera da letto (A)\"\t\"2/7/42\"\t\"\"\t\"\"\t\"Finestre camera da letto\"\t\"DPST-1-1\"\t\"Auto\"\n\"Perimetro loggia ingresso (A)\"\t\"2/7/47\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Sportello Caldaia (N)\"\t\"2/7/48\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Attuatori carichi\"\t\"3/-/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Prese/Utenze\"\t\"3/0/-\"\t\"\"\t\"\"\t\"Prese/Utenze\"\t\"\"\t\"Auto\"\n\"Generale 220V piano terra e primo piano\"\t\"3/0/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Forno\"\t\"3/0/1\"\t\"\"\t\"\"\t\"Forno\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavastoviglie\"\t\"3/0/2\"\t\"\"\t\"\"\t\"Lavastoviglie\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavatrice primo piano\"\t\"3/0/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Mixer Video Sala Tecnica\"\t\"3/0/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Prese spente in modalita notte + Comandate Sala Tecnica + Proiettore + TV Camera da letto + Antenna\"\t\"3/0/5\"\t\"\"\t\"\"\t\"Antenna)\"\t\"DPST-1-1\"\t\"Auto\"\n\"Studio\"\t\"3/0/7\"\t\"\"\t\"\"\t\"Studio\"\t\"DPST-1-1\"\t\"Auto\"\n\"Corrente soggiorno\"\t\"3/0/8\"\t\"\"\t\"\"\t\"Soggiorno\"\t\"DPST-1-1\"\t\"Auto\"\n\"Corrente cucina\"\t\"3/0/9\"\t\"\"\t\"\"\t\"Cucina\"\t\"DPT-1\"\t\"Auto\"\n\"_Richiesta accensione pompa caldaia da MDT AKH-0800.02\"\t\"3/0/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Utenza GAS (OPEN/CLOSE)\"\t\"3/0/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Utenza Acqua\"\t\"3/0/13\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Irrigazione logge\"\t\"3/0/14\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Ventilazione Fan Speed (0/1/2)\"\t\"3/0/15\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-100\"\t\"Auto\"\n\"Pompa ricircolo acqua calda sanitaria caldaia (ON/OFF)\"\t\"3/0/16\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"AC Essential BUS (Frigo, allarme, bus KNX)\"\t\"3/0/17\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavatrice piano terra\"\t\"3/0/18\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Ventilazione automatica (ON/OFF) Virtual Node-Red\"\t\"3/0/19\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Ventilazione Fan Speed Status (0/1/2)\"\t\"3/0/20\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-100\"\t\"Auto\"\n\"Prese comandate soffitta (ON/OFF)\"\t\"3/0/22\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Prese comandate soffitta Stato (ON/OFF)\"\t\"3/0/23\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Generale 220V piano terra e primo piano Stato\"\t\"3/0/24\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Corrente taverna\"\t\"3/0/25\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"_Pala soggiorno (ON/OFF Impulso On-Off <0,5s = accendi pala, >0,5s = spegni pala)\"\t\"3/0/26\"\t\"\"\t\"\"\t\"Vedere istruzioni Luceplan.\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lavatrice piano terra Stato\"\t\"3/0/27\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Accessi\"\t\"3/1/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"_Sbarre\"\t\"3/1/0\"\t\"\"\t\"\"\t\"Sbarre\"\t\"DPST-1-1\"\t\"Auto\"\n\"_Garage piccolo\"\t\"3/1/1\"\t\"\"\t\"\"\t\"Garage piccolo\"\t\"DPST-1-1\"\t\"Auto\"\n\"_Garage grande\"\t\"3/1/2\"\t\"\"\t\"\"\t\"Garage grande\"\t\"DPST-1-1\"\t\"Auto\"\n\"_Cancello [ON]\"\t\"3/1/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Tapparella soggiorno move\"\t\"3/1/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-8\"\t\"Auto\"\n\"Persiana finestra cucina move\"\t\"3/1/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-9\"\t\"Auto\"\n\"Tapparella soggiorno step\"\t\"3/1/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-7\"\t\"Auto\"\n\"Tapparella soggiorno % apertura\"\t\"3/1/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Persiana finestra cucina % apertura\"\t\"3/1/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Persiana finestra cucina step\"\t\"3/1/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-8\"\t\"Auto\"\n\"Tendone balcone soggiorno move\"\t\"3/1/10\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Tendone balcone soggiorno step\"\t\"3/1/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Tendone balcone soggiorno % apertura\"\t\"3/1/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Tenda rullo finestra soggiorno move\"\t\"3/1/13\"\t\"\"\t\"\"\t\"\"\t\"DPT-1\"\t\"Auto\"\n\"Tenda rullo finestra soggiorno step\"\t\"3/1/14\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-7\"\t\"Auto\"\n\"Tenda rullo finestra soggiorno % apertura\"\t\"3/1/15\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Comando pulsante veneziane finestrone (ON)\"\t\"3/1/16\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"_Porta REI impulso apertura automatica con richiusura (ON)\"\t\"3/1/17\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Porta REI apri/chiudi (ON/OFF)\"\t\"3/1/18\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-9\"\t\"Auto\"\n\"_Porta blindata [ON/OFF]\"\t\"3/1/19\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Persiana finestra cucina % apertura Stato\"\t\"3/1/20\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"_Porta REI impulso (apre se chiuso, chiude se aperto)\"\t\"3/1/21\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-17\"\t\"Auto\"\n\"Tenda rullo finestra soggiorno % apertura Stato\"\t\"3/1/22\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Tendone balcone soggiorno % apertura Stato\"\t\"3/1/23\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Tapparella soggiorno % apertura Stato\"\t\"3/1/24\"\t\"\"\t\"\"\t\"Soggiorno Tapparella\"\t\"DPST-5-1\"\t\"Auto\"\n\"Hormann Garage piccolo Move To Sub Position 1/2 Open [ON/OFF]\"\t\"3/1/26\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Basso voltaggio\"\t\"3/2/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Uscite logiche\"\t\"4/-/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Antifurto\"\t\"4/0/-\"\t\"\"\t\"\"\t\"SEC\"\t\"\"\t\"Auto\"\n\"Panico Hikvision (ON/OFF)\"\t\"4/0/1\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Panico Hikvision Stato (ON/OFF)\"\t\"4/0/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Lampeggianti blu Stato\"\t\"4/0/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Sirena carabinieri Stato\"\t\"4/0/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Sirena interna Stato\"\t\"4/0/5\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-2\"\t\"Auto\"\n\"Sirena interna (ON/OFF)\"\t\"4/0/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Lampeggianti blu (ON/OFF)\"\t\"4/0/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Sirena carabinieri (ON/OFF)\"\t\"4/0/12\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-1\"\t\"Auto\"\n\"Altre uscite logiche\"\t\"4/2/-\"\t\"\"\t\"\"\t\"\"\t\"\"\t\"Auto\"\n\"Play/Pause (ON/OFF)\"\t\"4/2/0\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-10\"\t\"Auto\"\n\"Playlist Next/Prev (ON/OFF)\"\t\"4/2/2\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-7\"\t\"Auto\"\n\"Titolo\"\t\"4/2/3\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-1\"\t\"Auto\"\n\"Interprete\"\t\"4/2/4\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-1\"\t\"Auto\"\n\"Volume assoluto (0-100)\"\t\"4/2/6\"\t\"\"\t\"\"\t\"\"\t\"DPST-5-1\"\t\"Auto\"\n\"Stato Play/Stop (ON/OFF)\"\t\"4/2/7\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-10\"\t\"Auto\"\n\"Nome Playlist corrente\"\t\"4/2/8\"\t\"\"\t\"\"\t\"\"\t\"DPST-16-1\"\t\"Auto\"\n\"Brano Prev/Next (ON/OFF)\"\t\"4/2/9\"\t\"\"\t\"\"\t\"\"\t\"DPST-1-7\"\t\"Auto\"\n\"RGB Colore Abmient Led Corlo\"\t\"4/2/11\"\t\"\"\t\"\"\t\"\"\t\"DPST-232-600\"\t\"Auto\"\n",
-    "KNXEthInterface": "ens18",
-    "KNXEthInterfaceManuallyInput": "",
-    "stopETSImportIfNoDatapoint": "fake",
-    "loglevel": "warn",
-    "name": "KNX IP Router 750",
-    "delaybetweentelegrams": "50",
-    "ignoreTelegramsWithRepeatedFlag": true,
-    "keyringFileXML": "",
-    "secureCredentialsMode": "keyring",
-    "tunnelIASelection": "Auto",
-    "tunnelIA": "",
-    "tunnelInterfaceIndividualAddress": "",
-    "tunnelUserPassword": "",
-    "tunnelUserId": "",
-    "autoReconnect": "yes",
-    "statusDateTimeCustom": "",
-    "statusDateTimeLocale": "",
-    "serialPortPath": "",
-    "serialBaudRate": "19200",
-    "serialDataBits": "8",
-    "serialStopBits": "1",
-    "serialParity": "even",
-    "serialRtscts": false,
-    "serialDtr": true,
-    "serialTimeout": "1200",
-    "isKBERRY": "true"
   }
 ]

@@ -3,6 +3,14 @@
 <br/>
 
 <p>
+<b>Version 1.1.0</b> - February 2026<br/>
+- BREAKING CHANGE: <code>alfasinapsi-load-controller</code> redesigned to work only with Telemetry input (<code>msg.payload.cutoff.hasWarning</code>), removing KNX load-control compatibility handling.<br/>
+- BREAKING CHANGE: <code>alfasinapsi-load-controller</code> outputs changed: now one output per configured load (min 1), each message is <code>msg.topic = &lt;load name&gt;</code> and <code>msg.payload = true/false</code> (unshed/shed). Summary output removed.<br/>
+- BREAKING CHANGE: load list fields simplified: removed <code>W</code> and explicit priority; load order in the list defines shedding order.<br/>
+- CHANGE: load-controller now always respects <code>Min acceso</code>/<code>Min spento</code> timers (no forced-off bypass).<br/>
+</p>
+
+<p>
 <b>Version 1.0.0</b> - February 2026<br/>
 - BREAKING CHANGE: changed package name to node-red-contrib-alfasinapsi-ultimate
 - FIX: faster node shutdown (best-effort client close) to avoid <code>Close timed out</code> errors on deploy/restart.<br/>

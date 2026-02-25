@@ -10,7 +10,6 @@ try {
 module.exports = function (RED) {
   const COMPATIBILITY_TELEMETRY = "telemetry";
   const COMPATIBILITY_KNX_LOAD_CONTROL_PIN = "knxLoadControlPin";
-  const KNX_LOAD_CONTROL_PIN_INTERVAL_MS = 10_000;
 
   function wToKw(valueW) {
     return Number(valueW ?? 0) / 1000;
@@ -104,20 +103,14 @@ module.exports = function (RED) {
       node.sendOnChange = !!config.sendOnChange;
       node.compatibility = config.compatibility || COMPATIBILITY_TELEMETRY;
 
-      const knxLoadControlPinEnabled = node.compatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN;
       const telemetryEnabled = node.compatibility === COMPATIBILITY_TELEMETRY;
 
-      node.pollInterval = Math.max(500, Number(config.pollInterval || 2000));
-      if (knxLoadControlPinEnabled) {
-        // Keep telemetry fresh enough for the 10s PIN output cadence.
-        node.pollInterval = Math.min(node.pollInterval, KNX_LOAD_CONTROL_PIN_INTERVAL_MS);
-      }
+      node.pollInterval = Math.max(500, Number(config.pollInterval || 10000));
 
       let lastPayloadCore = null;
       let timer = null;
-      let knxLoadControlPinTimer = null;
       let inFlight = false;
-      let lastHasCutoffWarning = null;
+      let lastShedding = null;
       let currentStatus = { connected: false, connecting: false, error: null, ts: Date.now() };
       let lastStatusSignature = null;
       let bootstrapDone = false;
@@ -167,7 +160,20 @@ module.exports = function (RED) {
             return;
           }
           const telemetry = await readTelemetry(node.device, { wordOrder: node.device.wordOrder });
-          lastHasCutoffWarning = !!telemetry?.cutoff?.hasWarning;
+
+          if (node.compatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN) {
+            const hasWarning = !!telemetry?.cutoff?.hasWarning;
+            const shedding = hasWarning ? "shed" : "unshed";
+            if (node.sendOnChange && lastShedding != null && lastShedding === shedding) return;
+            lastShedding = shedding;
+            safeSend({
+              topic: "alfasinapsi/telemetry/knx-load-control-pin",
+              payload: shedding,
+              shedding,
+              status: currentStatus
+            });
+            return;
+          }
 
           if (!telemetryEnabled) return;
 
@@ -224,32 +230,15 @@ module.exports = function (RED) {
         if (!node.device) return;
         bootstrapDone = true;
 
-        try {
-          node.device.on("alfasinapsi:status", onStatus);
-        } catch (err) {
-          reportError(err, "device.on");
-        }
+	        try {
+	          node.device.on("alfasinapsi:status", onStatus);
+	        } catch (err) {
+	          reportError(err, "device.on");
+	        }
 
-        if (knxLoadControlPinEnabled) {
-          knxLoadControlPinTimer = setInterval(() => {
-            try {
-              if (lastHasCutoffWarning == null) return;
-              const shedding = lastHasCutoffWarning ? "shed" : "unshed";
-              safeSend({
-                topic: "alfasinapsi/telemetry/knx-load-control-pin",
-                payload: shedding,
-                shedding,
-                status: currentStatus
-              });
-            } catch (err) {
-              reportError(err, "knx interval");
-            }
-          }, KNX_LOAD_CONTROL_PIN_INTERVAL_MS);
-        }
-
-        timer = setInterval(() => {
-          tick().catch((err) => reportError(err, "tick(unhandled)"));
-        }, node.pollInterval);
+	        timer = setInterval(() => {
+	          tick().catch((err) => reportError(err, "tick(unhandled)"));
+	        }, node.pollInterval);
         tick().catch((err) => reportError(err, "tick(first)"));
       };
 
@@ -272,15 +261,13 @@ module.exports = function (RED) {
       node.on("close", (removed, done) => {
         try {
           if (resolveTimer) clearTimeout(resolveTimer);
-          resolveTimer = null;
-          if (timer) clearInterval(timer);
-          timer = null;
-          if (knxLoadControlPinTimer) clearInterval(knxLoadControlPinTimer);
-          knxLoadControlPinTimer = null;
-          try {
-            node.device?.off?.("alfasinapsi:status", onStatus);
-          } catch (err) {
-            reportError(err, "device.off");
+	          resolveTimer = null;
+	          if (timer) clearInterval(timer);
+	          timer = null;
+	          try {
+	            node.device?.off?.("alfasinapsi:status", onStatus);
+	          } catch (err) {
+	            reportError(err, "device.off");
           }
         } catch (err) {
           reportError(err, "close");

@@ -25,15 +25,22 @@
 </script>
 
 <script type="text/html" data-help-name="alfasinapsi-telemetry">
-  <p><b>Telemetria Sinapsi Alfa</b> legge i dati da Sinapsi Alfa e invia messaggi dal suo unico output, in base alla compatibilita selezionata.</p>
+	  <p><b>Telemetria Sinapsi Alfa</b> legge i dati da Sinapsi Alfa e invia messaggi dal suo unico output, in base alla compatibilita selezionata.</p>
 
-  <h3>Uscite</h3>
-  <p>Questo nodo ha 1 uscita. In base alla <i>Compatibilita</i> selezionata, cambia il formato dei messaggi emessi.</p>
-  <ul>
-    <li><b>Telemetria</b>: invia il messaggio principale con <code>msg.payload</code> (semplificato) e <code>msg.insight</code> (tecnico).</li>
-    <li><b>KNX Load Control PIN</b>: invia un telegramma compatibile con l'ingresso del nodo KNX Load Control: <code>msg.shedding</code> = <code>shed</code>/<code>unshed</code> ogni 10s.</li>
-    <li><b>Stato connessione</b>: quando cambia lo stato del dispositivo, invia un messaggio con <code>msg.topic = alfasinapsi/telemetry/status</code> e <code>msg.status</code>.</li>
-  </ul>
+	  <h3>Importante: frequenza (Poll)</h3>
+	  <p>
+	    Il campo <b>Poll (ms)</b> influenza direttamente ogni automazione collegata a questo nodo.
+	    Per esempio, se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, la velocita con cui aumenta/diminuisce lo <i>shedding stage</i>
+	    dipende dalla frequenza con cui arrivano i messaggi.
+	  </p>
+
+	  <h3>Uscite</h3>
+	  <p>Questo nodo ha 1 uscita. In base alla <i>Compatibilita</i> selezionata, cambia il formato dei messaggi emessi.</p>
+	  <ul>
+	    <li><b>Telemetria</b>: invia il messaggio principale con <code>msg.payload</code> (semplificato) e <code>msg.insight</code> (tecnico).</li>
+	    <li><b>KNX Load Control PIN</b>: invia un telegramma compatibile con l'ingresso del nodo KNX Load Control: <code>msg.shedding</code> = <code>shed</code>/<code>unshed</code> con la stessa frequenza del <b>Poll (ms)</b> (oppure solo al cambio stato se abiliti <i>Solo se cambia</i>).</li>
+	    <li><b>Stato connessione</b>: quando cambia lo stato del dispositivo, invia un messaggio con <code>msg.topic = alfasinapsi/telemetry/status</code> e <code>msg.status</code>.</li>
+	  </ul>
 
   <h3>msg.status (stato connessione)</h3>
   <p>Ogni messaggio emesso include <code>msg.status</code>, con:</p>
@@ -79,11 +86,14 @@
     <li><code>insight.device</code>: dettagli profilo connessione</li>
   </ul>
 
-  <h3>Output: KNX Load Control PIN</h3>
-  <p>Ogni 10 secondi invia <code>shed</code> se la telemetria segnala un distacco imminente, altrimenti <code>unshed</code>.</p>
-  <dl class="message-properties">
-    <dt>msg.topic <span class="property-type">string</span></dt>
-    <dd><code>alfasinapsi/telemetry/knx-load-control-pin</code></dd>
+	  <h3>Output: KNX Load Control PIN</h3>
+	  <p>
+	    Invia <code>shed</code> se la telemetria segnala un distacco imminente, altrimenti <code>unshed</code>.
+	    La frequenza dei messaggi dipende da <b>Poll (ms)</b>. Se abiliti <i>Solo se cambia</i>, emette solo quando passa da <code>shed</code> a <code>unshed</code> (o viceversa).
+	  </p>
+	  <dl class="message-properties">
+	    <dt>msg.topic <span class="property-type">string</span></dt>
+	    <dd><code>alfasinapsi/telemetry/knx-load-control-pin</code></dd>
 
     <dt>msg.payload <span class="property-type">string</span></dt>
     <dd><code>shed</code> oppure <code>unshed</code></dd>
@@ -92,26 +102,29 @@
     <dd><code>shed</code> oppure <code>unshed</code> (per compatibilita con KNX Load Control)</dd>
   </dl>
 
-  <h3>Configurazione</h3>
-  <dl class="message-properties">
+	  <h3>Configurazione</h3>
+	  <dl class="message-properties">
     <dt>Dispositivo <span class="property-type">alfasinapsi-device</span></dt>
     <dd>Indirizzo IP Sinapsi (impostazioni di comunicazione fisse).</dd>
 
-    <dt>Poll (ms) <span class="property-type">number</span></dt>
-    <dd>Ogni quanto il nodo legge i dati.</dd>
+	    <dt>Poll (ms) <span class="property-type">number</span></dt>
+	    <dd>
+	      Ogni quanto il nodo legge i dati e (in modalita <code>Telemetria</code>) ogni quanto puo emettere messaggi.
+	      Se colleghi l'output a logiche di shedding a stadi, questo valore influenza la velocita della sequenza.
+	    </dd>
 
     <dt>Solo se cambia <span class="property-type">boolean</span></dt>
     <dd>Se abilitato, invia messaggi solo quando cambia il payload.</dd>
 
-    <dt>Compatibilita <span class="property-type">telemetry | knxLoadControlPin</span></dt>
-    <dd>
-      <ul>
-        <li><code>Telemetria</code>: emette la telemetria (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
-        <li><code>KNX Load Control PIN</code>: emette <code>shed</code>/<code>unshed</code> ogni 10s (in questa modalita <i>Solo se cambia</i> non si applica).</li>
-      </ul>
-      Nota: in modalita <code>KNX Load Control PIN</code> il polling interno e' limitato a 10s (anche se imposti un Poll piu alto).
-    </dd>
-  </dl>
+	    <dt>Compatibilita <span class="property-type">telemetry | knxLoadControlPin</span></dt>
+	    <dd>
+	      <ul>
+	        <li><code>Telemetria</code>: emette la telemetria (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
+	        <li><code>KNX Load Control PIN</code>: emette <code>shed</code>/<code>unshed</code> (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
+	      </ul>
+	      Nota: se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, un <i>Poll</i> piu basso rende la sequenza di shedding piu veloce (stage che cambia di 1 per messaggio).
+	    </dd>
+	  </dl>
 
   <h3>Dettagli tecnici</h3>
   <ul>
@@ -133,7 +146,7 @@
       defaults: {
         name: { value: "" },
         device: { value: "", type: "alfasinapsi-device", required: true },
-        pollInterval: { value: 2000, validate: RED.validators.number() },
+        pollInterval: { value: 10000, validate: RED.validators.number() },
         sendOnChange: { value: false },
         compatibility: { value: "telemetry" }
       },
