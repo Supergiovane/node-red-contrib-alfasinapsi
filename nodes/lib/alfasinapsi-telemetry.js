@@ -35,12 +35,20 @@ function buildTelemetry(raw, wordOrder) {
   const hasCutoffWarning = !isNoCutoffWarning(cutoffEventEpoch);
   const cutoffAtEpoch = hasCutoffWarning ? Number(cutoffEventEpoch) + Number(cutoffRemainingSeconds || 0) : null;
 
+  const powerImportW = Number(get16("powerImportW") ?? 0);
+  const powerExportW = Number(get16("powerExportW") ?? 0);
+  const powerProductionW = Number(get16("powerProductionW") ?? 0);
+  const powerConsumptionW = Math.max(0, powerImportW + powerProductionW - powerExportW);
+  const powerSurplusW = powerExportW;
+
   return {
     ts: Date.now(),
     power: {
-      importW: get16("powerImportW"),
-      exportW: get16("powerExportW"),
-      productionW: get16("powerProductionW"),
+      importW: powerImportW,
+      exportW: powerExportW,
+      productionW: powerProductionW,
+      consumptionW: powerConsumptionW,
+      surplusW: powerSurplusW,
       importQuarterAvgW: get16("powerImportQuarterAvgW"),
       exportQuarterAvgW: get16("powerExportQuarterAvgW")
     },

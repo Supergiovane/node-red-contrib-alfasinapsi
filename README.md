@@ -53,60 +53,6 @@ Esempio `examples/alfasinapsi-load-controller.json`.
 
 ## Nodi
 
-### `alfasinapsi-telemetry`
-
-Interroga Sinapsi Alfa e, in base alla configurazione <i>Compatibilita</i>, invia:
-
-- **Telemetria** (default): un messaggio con misure semplificate + dettagli tecnici.
-- **KNX Load Control PIN**: un messaggio compatibile con l'ingresso del nodo KNX Load Control (es. `knxUltimateLoadControl`) per forzare shed/unshed.
-- **Stato connessione**: quando cambia lo stato del dispositivo, invia un messaggio di stato.
-
-Output:
-
-- Modalita <b>Telemetria</b>:
-  - `msg.topic = "alfasinapsi/telemetry"`
-  - `msg.payload` (semplificato): potenza/energia (import/export/production), fascia tariffaria, avviso distacco + timestamp
-  - `msg.insight` (tecnico): telemetria completa decodificata (include campi extra come fasce di ieri, medie di quarto d'ora, ecc.)
-  - `msg.status`: stato connessione corrente
-- Modalita <b>KNX Load Control PIN</b> (in base a <i>Poll (ms)</i>):
-  - `msg.topic = "alfasinapsi/telemetry/knx-load-control-pin"`
-  - `msg.payload = "shed" | "unshed"`
-  - `msg.shedding = "shed" | "unshed"`
-  - `msg.status`: stato connessione corrente
-- Messaggio <b>Stato connessione</b> (solo quando cambia):
-  - `msg.topic = "alfasinapsi/telemetry/status"`
-  - `msg.payload = msg.status`
-
-Configurazione:
-
-- `Dispositivo`: IP del tuo Sinapsi (parametri di connessione fissi per stabilita)
-- `Poll (ms)`: ogni quanto il nodo legge i dati (in modalita <i>Telemetria</i> influenza anche la frequenza dei messaggi; quindi e' importante se a valle hai logiche a stadi)
-- `Solo se cambia`: se abilitato, emette solo quando cambiano i valori principali
-- `Compatibilita`: seleziona <i>Telemetria</i> oppure <i>KNX Load Control PIN</i>
-  - Nota: in modalita <i>KNX Load Control PIN</i> emette con la stessa frequenza del <i>Poll (ms)</i> (oppure solo al cambio stato se <i>Solo se cambia</i> e' attivo).
-
-### `alfasinapsi-load-controller`
-
-Reagisce ai messaggi in formato <b>Telemetria</b> e applica una sequenza a stadi sui carichi configurati usando <code>payload.cutoff.hasWarning</code>.
-
-Uscite: una uscita per ogni carico configurato (minimo 1, per evitare che il nodo sparisca dall'editor).
-Ogni uscita emette un comando booleano per quel carico con:
-
-- `msg.topic = "<nome carico>"`
-- `msg.payload = true` (unshed/abilitato) oppure `false` (shed/disabilitato)
-
-Algoritmo:
-
-- Se <code>payload.cutoff.hasWarning = true</code> aumenta lo <b>stage</b> di 1 (fino a N carichi).
-- Se <code>payload.cutoff.hasWarning = false</code> diminuisce lo <b>stage</b> di 1 (fino a 0).
-- Lo stage indica quanti carichi vengono messi in shedding, in base all'<b>ordine</b> della lista (dall'alto verso il basso: shed per primo).
-
-Note:
-
-- I comandi dei carichi escono solo quando il nodo decide di cambiare stato (shedding/unshedding di quel carico).
-
-## Dettagli (per utenti inesperti)
-
 ### 1) `alfasinapsi-device` (nodo di configurazione)
 
 Questo nodo non appare nel flow come un nodo normale. E' una configurazione condivisa usata dagli altri nodi.
@@ -119,7 +65,7 @@ Impostazioni fisse (non modificabili):
 
 - Il profilo di connessione e' fisso per stabilita (serve solo l'indirizzo IP).
 
-### 2) `alfasinapsi-telemetry` (misure in sola lettura)
+### 2) `alfasinapsi-telemetry`
 
 Questo nodo legge le misure ogni _Poll (ms)_ e invia messaggi dal suo unico output.
 
@@ -130,10 +76,8 @@ In piu:
 
 Puoi scegliere cosa emettere dall'output con <i>Compatibilita</i>:
 
-- <b>Telemetria</b>: messaggio con misure + dettagli tecnici.
-- <b>KNX Load Control PIN</b>: messaggio `shed/unshed` con la frequenza del <i>Poll (ms)</i> (compatibile con il nodo KNX Load Control).
-  - Nota: in questa modalita la frequenza dipende da <i>Poll (ms)</i> (e rispetta <i>Solo se cambia</i>).
-  - Nota importante: se colleghi questo output al nodo <code>alfasinapsi-load-controller</code>, la frequenza dei messaggi determina la velocita con cui aumenta/diminuisce lo <i>shedding stage</i>.
+- <b>Telemetria</b> (consigliato): misure semplificate + dettagli tecnici.
+- <b>KNX Load Control PIN</b>: messaggio `shed/unshed` (utile se lo colleghi a un nodo KNX Load Control).
 
 Uso tipico:
 
@@ -143,15 +87,15 @@ Uso tipico:
 Struttura del messaggio (modalita <b>Telemetria</b>):
 
 - `msg.payload` - campi semplificati per l'uso quotidiano:
-  - `payload.power.importkW` / `exportkW` / `productionkW`
+  - `payload.power.importkW` / `exportkW` / `productionkW` / `consumptionKW` / `surplusKW`
+  - `payload.utilityPercent.selfConsumption` / `gridSale` / `gridPurchase`
   - `payload.energy.importTotalkWh` / `exportTotalkWh` / `productionTotalkWh`
   - `payload.tariffBand`
   - `payload.cutoff.hasWarning` / `payload.cutoff.remainingSeconds` / `payload.cutoff.atIso`
   - `payload.messageAtIso` / `payload.meterReadAtIso`
 - `msg.insight` - dettagli tecnici:
   - `insight.telemetry`: telemetria completa decodificata (include campi extra come fasce di ieri, medie di quarto d'ora, ecc.)
-  - `insight.meta`: timestamp, modalita di lettura
-  - `insight.device`: dettagli del profilo di connessione
+  - `insight.power`: valori comodi in watt (`consumptionW`, `surplusW`)
 - `msg.status` - stato connessione:
   - `status.connected` (boolean)
   - `status.connecting` (boolean)
@@ -160,26 +104,32 @@ Struttura del messaggio (modalita <b>Telemetria</b>):
 
 Struttura del messaggio (modalita <b>KNX Load Control PIN</b>):
 
-- `msg.payload = "shed"` se e' presente un avviso distacco imminente, altrimenti `msg.payload = "unshed"` (con la frequenza del <i>Poll (ms)</i>)
-- `msg.shedding` con lo stesso valore (per compatibilita con KNX Load Control)
+- `msg.payload = "shed"` se e' presente un avviso distacco imminente, altrimenti `msg.payload = "unshed"`
+- `msg.shedding` con lo stesso valore
 
 ## Terminologia (import/export/surplus)
 
-Questi sono termini standard nel monitoraggio energetico:
+Termini usati nel payload:
 
-- **Import**: potenza/energia prelevata dalla rete (stai consumando piu di quanto produci).
-- **Export**: potenza/energia immessa in rete (stai producendo piu di quanto consumi).
-- **Surplus**: potenza in eccesso disponibile. In questo pacchetto la logica surplus si basa su **export** (eventualmente ridotto da _Surplus reserve_).
+- **Import**: stai acquistando energia dalla rete.
+- **Export**: stai vendendo energia alla rete.
+- **Production**: stai producendo energia (es. fotovoltaico).
+- **Consumo (casa)**: consumo istantaneo totale della casa (`payload.power.consumptionKW`).
+- **Surplus**: potenza in eccesso disponibile; in questo pacchetto coincide con **Export** (`payload.power.surplusKW`).
+- **Percentuali utili** (`payload.utilityPercent`, 0..100):
+  - `selfConsumption`: quanta parte della produzione stai usando in casa
+  - `gridSale`: quanta parte della produzione stai vendendo
+  - `gridPurchase`: quanta parte del consumo arriva dalla rete
 
-### 3) `alfasinapsi-load-controller` (solo decisioni)
+### 3) `alfasinapsi-load-controller`
 
-Questo nodo <b>non fa polling</b>. Riceve in ingresso messaggi <b>Telemetria</b> (output del nodo <code>alfasinapsi-telemetry</code> in modalita <i>Telemetria</i>) e usa <code>payload.cutoff.hasWarning</code> per decidere se aumentare o diminuire lo stage. Invia:
+Questo nodo <b>non fa polling</b>. Riceve in ingresso messaggi <b>Telemetria</b> (output del nodo <code>alfasinapsi-telemetry</code> in modalita <i>Telemetria</i>) e usa <code>payload.cutoff.hasWarning</code> per decidere se spegnere o riaccendere i carichi, uno alla volta, seguendo l'ordine della lista. Invia:
 
 - Una uscita per ogni carico configurato, che emette <code>true/false</code> (unshed/shed) con <code>msg.topic</code> uguale al nome del carico.
 
 Importante: questo nodo **non comanda i relè da solo**. Devi collegare ogni uscita carico a qualcosa che accende/spegne davvero i dispositivi (per esempio MQTT, nodi Shelly, chiamate di servizio Home Assistant, ecc.).
 
-Nota importante: lo stage cambia di 1 per ogni messaggio ricevuto, quindi la velocita della sequenza dipende dalla frequenza dei messaggi in ingresso (per esempio dal <i>Poll (ms)</i> della telemetria).
+Nota: il controller cambia un carico alla volta; la velocita dipende da quanto spesso arrivano messaggi dalla telemetria (<i>Poll</i>).
 
 Come configurare i carichi:
 

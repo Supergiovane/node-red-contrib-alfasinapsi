@@ -3,6 +3,15 @@
 <br/>
 
 <p>
+<b>Version 1.1.2</b> - February 2026<br/>
+- NEW: telemetry payload now includes instantaneous house consumption and surplus: <code>payload.power.consumptionKW</code>, <code>payload.power.surplusKW</code>.<br/>
+- NEW: telemetry payload now includes instantaneous utility percentages: <code>payload.utilityPercent.selfConsumption</code>, <code>gridSale</code>, <code>gridPurchase</code>.<br/>
+- NEW: telemetry insight now exposes watt values in <code>insight.power</code>: <code>consumptionW</code>, <code>surplusW</code>.<br/>
+- DOC: updated telemetry help panel and README to describe the new fields.<br/>
+- DOC: simplified telemetry help/README for beginner users.<br/>
+</p>
+
+<p>
 <b>Version 1.1.1</b> - February 2026<br/>
 - DOC: added YouTube video link to node edit panels and help panels.<br/>
 - DOC: added YouTube section + thumbnail image to README.<br/>

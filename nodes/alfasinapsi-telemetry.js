@@ -19,13 +19,46 @@ module.exports = function (RED) {
     return Number(valueWh ?? 0) / 1000;
   }
 
+  function clamp01(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 0;
+    if (n < 0) return 0;
+    if (n > 1) return 1;
+    return n;
+  }
+
+  function round1(value) {
+    const n = Number(value);
+    if (!Number.isFinite(n)) return 0;
+    return Math.round(n * 10) / 10;
+  }
+
   function simplifyTelemetry(telemetry) {
     const hasWarning = !!telemetry?.cutoff?.hasWarning;
+    const powerImportW = Number(telemetry?.power?.importW ?? 0);
+    const powerExportW = Number(telemetry?.power?.exportW ?? 0);
+    const powerProductionW = Number(telemetry?.power?.productionW ?? 0);
+    const powerConsumptionW = Math.max(0, powerImportW + powerProductionW - powerExportW);
+    const powerSurplusW = Number(telemetry?.power?.surplusW ?? powerExportW);
+    const productionUsedLocallyW = Math.max(0, powerProductionW - powerExportW);
+
+    // Percentuali istantanee (0..100)
+    const selfConsumptionPct = powerProductionW > 0 ? round1(clamp01(productionUsedLocallyW / powerProductionW) * 100) : 0;
+    const gridSalePct = powerProductionW > 0 ? round1(clamp01(powerExportW / powerProductionW) * 100) : 0;
+    const gridPurchasePct = powerConsumptionW > 0 ? round1(clamp01(powerImportW / powerConsumptionW) * 100) : 0;
+
     return {
       power: {
-        importkW: wToKw(telemetry?.power?.importW),
-        exportkW: wToKw(telemetry?.power?.exportW),
-        productionkW: wToKw(telemetry?.power?.productionW)
+        importkW: wToKw(powerImportW),
+        exportkW: wToKw(powerExportW),
+        productionkW: wToKw(powerProductionW),
+        consumptionKW: wToKw(powerConsumptionW),
+        surplusKW: wToKw(powerSurplusW)
+      },
+      utilityPercent: {
+        selfConsumption: selfConsumptionPct,
+        gridSale: gridSalePct,
+        gridPurchase: gridPurchasePct
       },
       energy: {
         importTotalkWh: whToKwh(telemetry?.energy?.importTotalWh),
@@ -185,6 +218,10 @@ module.exports = function (RED) {
           };
           const insight = {
             telemetry,
+            power: {
+              consumptionW: Number(telemetry?.power?.consumptionW ?? 0),
+              surplusW: Number(telemetry?.power?.surplusW ?? telemetry?.power?.exportW ?? 0)
+            },
             meta: {
               ts: telemetry?.ts ?? Date.now(),
               functionCode: 3,

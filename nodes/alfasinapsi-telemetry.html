@@ -35,12 +35,10 @@
 	  <h3>Video YouTube</h3>
 	  <p><a href="https://youtu.be/R-7PZv3iJ2s" target="_blank" rel="noopener noreferrer">Guarda il video: configurazione e utilizzo</a></p>
 
-	  <h3>Importante: frequenza (Poll)</h3>
-	  <p>
-	    Il campo <b>Poll (ms)</b> influenza direttamente ogni automazione collegata a questo nodo.
-	    Per esempio, se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, la velocita con cui aumenta/diminuisce lo <i>shedding stage</i>
-	    dipende dalla frequenza con cui arrivano i messaggi.
-	  </p>
+		  <h3>Importante: frequenza (Poll)</h3>
+		  <p>
+		    Il campo <b>Poll (ms)</b> decide ogni quanto arrivano i valori: se lo abbassi, avrai aggiornamenti piu frequenti.
+		  </p>
 
 	  <h3>Uscite</h3>
 	  <p>Questo nodo ha 1 uscita. In base alla <i>Compatibilita</i> selezionata, cambia il formato dei messaggi emessi.</p>
@@ -64,35 +62,43 @@
     <dt>msg.topic <span class="property-type">string</span></dt>
     <dd><code>alfasinapsi/telemetry</code></dd>
 
-    <dt>msg.payload <span class="property-type">object</span></dt>
-    <dd>Valori semplificati per l'uso quotidiano (potenza/energia/fascia tariffaria/avviso distacco).</dd>
+	    <dt>msg.payload <span class="property-type">object</span></dt>
+	    <dd>Valori semplificati per l'uso quotidiano (potenza/energia/percentuali utili/fascia tariffaria/avviso distacco).</dd>
 
     <dt>msg.insight <span class="property-type">object</span></dt>
     <dd>Dettagli tecnici (telemetria completa decodificata + meta informazioni).</dd>
   </dl>
 
-  <h3>msg.payload (semplificato)</h3>
-  <ul>
-    <li><code>payload.power.importkW</code>, <code>payload.power.exportkW</code>, <code>payload.power.productionkW</code></li>
-    <li><code>payload.energy.importTotalkWh</code>, <code>payload.energy.exportTotalkWh</code>, <code>payload.energy.productionTotalkWh</code></li>
-    <li><code>payload.tariffBand</code></li>
-    <li><code>payload.cutoff.hasWarning</code>, <code>payload.cutoff.remainingSeconds</code>, <code>payload.cutoff.atIso</code></li>
-    <li><code>payload.messageAtIso</code>, <code>payload.meterReadAtIso</code></li>
-  </ul>
+			  <h3>msg.payload (semplificato)</h3>
+			  <ul>
+			    <li>
+			      <code>payload.power.importkW</code>, <code>payload.power.exportkW</code>, <code>payload.power.productionkW</code>,
+			      <code>payload.power.consumptionKW</code>, <code>payload.power.surplusKW</code>
+			    </li>
+			    <li><code>payload.utilityPercent</code>: percentuali istantanee (0..100, 1 decimale)</li>
+			    <li><code>payload.utilityPercent.selfConsumption</code>: % autoconsumo istantaneo (quanta produzione usi in casa)</li>
+			    <li><code>payload.utilityPercent.gridSale</code>: % vendita istantanea al gestore (quanta produzione vendi)</li>
+			    <li><code>payload.utilityPercent.gridPurchase</code>: % acquisto istantaneo dal gestore (quanta parte del consumo arriva dalla rete)</li>
+			    <li><code>payload.energy.importTotalkWh</code>, <code>payload.energy.exportTotalkWh</code>, <code>payload.energy.productionTotalkWh</code></li>
+			    <li><code>payload.tariffBand</code></li>
+			    <li><code>payload.cutoff.hasWarning</code>, <code>payload.cutoff.remainingSeconds</code>, <code>payload.cutoff.atIso</code></li>
+			    <li><code>payload.messageAtIso</code>, <code>payload.meterReadAtIso</code></li>
+			  </ul>
 
-  <h3>Terminologia</h3>
-  <ul>
-    <li><b>Import</b>: potenza/energia prelevata dalla rete (consumi piu di quanto produci).</li>
-    <li><b>Export</b>: potenza/energia immessa in rete (produci piu di quanto consumi).</li>
-    <li><b>Production</b>: potenza/energia prodotta (per esempio da fotovoltaico).</li>
-  </ul>
+		  <h3>Terminologia</h3>
+		  <ul>
+		    <li><b>Consumo (casa)</b>: consumo istantaneo totale della casa. In questo pacchetto e' calcolato come <code>import + production - export</code> (campo <code>payload.power.consumptionKW</code>).</li>
+		    <li><b>Import</b>: potenza/energia prelevata dalla rete (consumi piu di quanto produci).</li>
+		    <li><b>Export</b>: potenza/energia immessa in rete (produci piu di quanto consumi).</li>
+		    <li><b>Surplus</b>: potenza in eccesso disponibile. In questo pacchetto coincide con <b>Export</b> (campo <code>payload.power.surplusKW</code>).</li>
+		    <li><b>Production</b>: potenza/energia prodotta (per esempio da fotovoltaico).</li>
+		  </ul>
 
-  <h3>msg.insight (tecnico)</h3>
-  <ul>
-    <li><code>insight.telemetry</code>: telemetria completa decodificata (include campi extra come fasce di ieri, medie di quarto d'ora, ecc.)</li>
-    <li><code>insight.meta</code>: timestamp, codice funzione, modalita lettura</li>
-    <li><code>insight.device</code>: dettagli profilo connessione</li>
-  </ul>
+		  <h3>msg.insight (tecnico)</h3>
+		  <ul>
+		    <li><code>insight.telemetry</code>: telemetria completa decodificata (include campi extra come fasce di ieri, medie di quarto d'ora, ecc.)</li>
+		    <li><code>insight.power</code>: valori comodi in watt (<code>consumptionW</code>, <code>surplusW</code>)</li>
+		  </ul>
 
 	  <h3>Output: KNX Load Control PIN</h3>
 	  <p>
@@ -130,21 +136,11 @@
 	        <li><code>Telemetria</code>: emette la telemetria (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
 	        <li><code>KNX Load Control PIN</code>: emette <code>shed</code>/<code>unshed</code> (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
 	      </ul>
-	      Nota: se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, un <i>Poll</i> piu basso rende la sequenza di shedding piu veloce (stage che cambia di 1 per messaggio).
-	    </dd>
-	  </dl>
+		      Nota: se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, un <i>Poll</i> piu basso rende il controller piu reattivo.
+		    </dd>
+		  </dl>
 
-  <h3>Dettagli tecnici</h3>
-  <ul>
-    <li>Codice funzione: <code>3</code> (lettura registri holding)</li>
-  </ul>
-
-  <h3>Risoluzione problemi</h3>
-  <ul>
-    <li>Se i valori restano a 0, verifica l'indirizzo IP e che la porta 502 sia raggiungibile da Node-RED.</li>
-    <li>Se vedi errori di timeout, assicurati che nessun altro sistema sia connesso al dispositivo nello stesso momento (spesso e' consentita una sola connessione alla volta).</li>
-  </ul>
-</script>
+	</script>
 
 <script type="text/javascript">
   (function () {
