@@ -10,6 +10,10 @@ try {
 module.exports = function (RED) {
   const COMPATIBILITY_TELEMETRY = "telemetry";
   const COMPATIBILITY_KNX_LOAD_CONTROL_PIN = "knxLoadControlPin";
+  const TELEMETRY_PINS_MODE_SINGLE = "singleTelemetryPin";
+  const TELEMETRY_PINS_MODE_VALUES = "sixValuePins";
+  const OUTPUT_COUNT_SINGLE = 1;
+  const OUTPUT_COUNT_VALUES = 6;
 
   function wToKw(valueW) {
     return Number(valueW ?? 0) / 1000;
@@ -80,6 +84,20 @@ module.exports = function (RED) {
     return d.toISOString();
   }
 
+  function isFiniteNumber(value) {
+    return typeof value === "number" && Number.isFinite(value);
+  }
+
+  function isBoolean(value) {
+    return typeof value === "boolean";
+  }
+
+  function buildOutputMessages(outputCount, baseMsg) {
+    const out = Array.from({ length: outputCount }, () => null);
+    if (baseMsg != null) out[0] = baseMsg;
+    return out;
+  }
+
   function AlfaSinapsiTelemetryNode(config) {
     try {
       RED.nodes.createNode(this, config);
@@ -135,8 +153,11 @@ module.exports = function (RED) {
       node.device = null;
       node.sendOnChange = !!config.sendOnChange;
       node.compatibility = config.compatibility || COMPATIBILITY_TELEMETRY;
+      node.telemetryPinsMode = config.telemetryPinsMode
+        || ((Number(config.outputs) >= OUTPUT_COUNT_VALUES) ? TELEMETRY_PINS_MODE_VALUES : TELEMETRY_PINS_MODE_SINGLE);
 
       const telemetryEnabled = node.compatibility === COMPATIBILITY_TELEMETRY;
+      const telemetryValuesPinsEnabled = telemetryEnabled && node.telemetryPinsMode === TELEMETRY_PINS_MODE_VALUES;
 
       node.pollInterval = Math.max(500, Number(config.pollInterval || 10000));
 
@@ -165,12 +186,14 @@ module.exports = function (RED) {
         currentStatus = nextStatus;
         if (signature === lastStatusSignature) return;
         lastStatusSignature = signature;
-        safeSend({
+        if (telemetryValuesPinsEnabled) return;
+        const out = buildOutputMessages(OUTPUT_COUNT_SINGLE, {
           topic: "alfasinapsi/telemetry/status",
           payload: currentStatus,
           status: currentStatus,
           reason: reason || "status"
         });
+        safeSend(out);
       };
 
       const onStatus = (s) => {
@@ -199,12 +222,13 @@ module.exports = function (RED) {
             const shedding = hasWarning ? "shed" : "unshed";
             if (node.sendOnChange && lastShedding != null && lastShedding === shedding) return;
             lastShedding = shedding;
-            safeSend({
+            const out = buildOutputMessages(OUTPUT_COUNT_SINGLE, {
               topic: "alfasinapsi/telemetry/knx-load-control-pin",
               payload: shedding,
               shedding,
               status: currentStatus
             });
+            safeSend(out);
             return;
           }
 
@@ -243,7 +267,60 @@ module.exports = function (RED) {
           }
 
           lastPayloadCore = payloadCore;
-          safeSend({ topic: "alfasinapsi/telemetry", payload, insight, status: currentStatus });
+          if (!telemetryValuesPinsEnabled) {
+            const out = buildOutputMessages(OUTPUT_COUNT_SINGLE, {
+              topic: "alfasinapsi/telemetry",
+              payload,
+              insight,
+              status: currentStatus
+            });
+            safeSend(out);
+            return;
+          }
+
+          const pinValues = [
+            {
+              topic: "alfasinapsi/telemetry/pin/consumptionKW",
+              value: payload?.power?.consumptionKW,
+              validator: isFiniteNumber
+            },
+            {
+              topic: "alfasinapsi/telemetry/pin/productionkW",
+              value: payload?.power?.productionkW,
+              validator: isFiniteNumber
+            },
+            {
+              topic: "alfasinapsi/telemetry/pin/selfConsumption",
+              value: payload?.utilityPercent?.selfConsumption,
+              validator: isFiniteNumber
+            },
+            {
+              topic: "alfasinapsi/telemetry/pin/gridSale",
+              value: payload?.utilityPercent?.gridSale,
+              validator: isFiniteNumber
+            },
+            {
+              topic: "alfasinapsi/telemetry/pin/gridPurchase",
+              value: payload?.utilityPercent?.gridPurchase,
+              validator: isFiniteNumber
+            },
+            {
+              topic: "alfasinapsi/telemetry/pin/cutoff.hasWarning",
+              value: payload?.cutoff?.hasWarning,
+              validator: isBoolean
+            }
+          ];
+
+          const out = buildOutputMessages(OUTPUT_COUNT_VALUES);
+          pinValues.forEach(({ topic, value, validator }, index) => {
+            if (!validator(value)) return;
+            out[index] = {
+              topic,
+              payload: value,
+              status: currentStatus
+            };
+          });
+          if (out.some((msg) => msg != null)) safeSend(out);
         } catch (err) {
           const message = err?.message || String(err);
           const text = /timed out/i.test(message) ? "timeout" : `errore: ${message}`;

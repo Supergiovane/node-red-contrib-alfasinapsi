@@ -1,0 +1,159 @@
+[
+  {
+    "id": "6a62f5f7dfb1974f",
+    "type": "tab",
+    "label": "Sinapsi Alfa - Telemetry PIN",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "9a6b1ceef4a45618",
+    "type": "comment",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Modalita 6 PIN valori principali: collega il tuo dispositivo Sinapsi e osserva i 6 output.",
+    "info": "",
+    "x": 390,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "0d972cdeecf649f8",
+    "type": "alfasinapsi-telemetry",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Telemetria + PIN",
+    "device": "f201f47d5798ec5f",
+    "pollInterval": 10000,
+    "sendOnChange": false,
+    "compatibility": "telemetry",
+    "telemetryPinsMode": "sixValuePins",
+    "x": 220,
+    "y": 220,
+    "wires": [
+      [
+        "f1cdd4128b3e82b9"
+      ],
+      [
+        "6e95cc9f2e4cb0ec"
+      ],
+      [
+        "4fd84edb4f4dbe69"
+      ],
+      [
+        "adfe9775782daedf"
+      ],
+      [
+        "0572d7dcb8d3f635"
+      ],
+      [
+        "3f66e2cb3283fd31"
+      ]
+    ]
+  },
+  {
+    "id": "f1cdd4128b3e82b9",
+    "type": "debug",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Uscita 1 - Consumo (casa)",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 530,
+    "y": 170,
+    "wires": []
+  },
+  {
+    "id": "6e95cc9f2e4cb0ec",
+    "type": "debug",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Uscita 2 - Produzione",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 500,
+    "y": 200,
+    "wires": []
+  },
+  {
+    "id": "4fd84edb4f4dbe69",
+    "type": "debug",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Uscita 3 - % autoconsumo istantaneo",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 550,
+    "y": 230,
+    "wires": []
+  },
+  {
+    "id": "adfe9775782daedf",
+    "type": "debug",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Uscita 4 - % vendita istantanea al gestore",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 570,
+    "y": 260,
+    "wires": []
+  },
+  {
+    "id": "0572d7dcb8d3f635",
+    "type": "debug",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Uscita 5 - % acquisto istantaneo dal gestore",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 580,
+    "y": 290,
+    "wires": []
+  },
+  {
+    "id": "3f66e2cb3283fd31",
+    "type": "debug",
+    "z": "6a62f5f7dfb1974f",
+    "name": "Uscita 6 - Avviso distacco",
+    "active": true,
+    "tosidebar": true,
+    "console": false,
+    "tostatus": false,
+    "complete": "true",
+    "targetType": "full",
+    "statusVal": "",
+    "statusType": "auto",
+    "x": 530,
+    "y": 320,
+    "wires": []
+  },
+  {
+    "id": "f201f47d5798ec5f",
+    "type": "alfasinapsi-device",
+    "host": "192.168.1.186"
+  }
+]

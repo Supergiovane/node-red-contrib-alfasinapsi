@@ -3,6 +3,15 @@
 <br/>
 
 <p>
+<b>Version 1.1.3</b> - March 2026<br/>
+- NEW: telemetry node now supports selectable telemetry pin modes: <code>singleTelemetryPin</code> (single full-telemetry output) or <code>sixValuePins</code> (6 dedicated value outputs).<br/>
+- NEW: added dedicated telemetry outputs for key values: <code>consumptionKW</code>, <code>productionkW</code>, <code>selfConsumption</code>, <code>gridSale</code>, <code>gridPurchase</code>, <code>cutoff.hasWarning</code>.<br/>
+- CHANGE: when telemetry pin mode is <code>sixValuePins</code>, each output emits only its own value and only if type-valid (numeric outputs require finite numbers, <code>cutoff.hasWarning</code> requires boolean).<br/>
+- DOC: telemetry node help panel updated to document new output modes and behavior.<br/>
+- EXAMPLE: added telemetry pins demo flow: <code>examples/alfasinapsi-telemetry-pins.json</code>.<br/>
+</p>
+
+<p>
 <b>Version 1.1.2</b> - February 2026<br/>
 - NEW: telemetry payload now includes instantaneous house consumption and surplus: <code>payload.power.consumptionKW</code>, <code>payload.power.surplusKW</code>.<br/>
 - NEW: telemetry payload now includes instantaneous utility percentages: <code>payload.utilityPercent.selfConsumption</code>, <code>gridSale</code>, <code>gridPurchase</code>.<br/>

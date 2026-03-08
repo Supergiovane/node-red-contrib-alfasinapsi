@@ -27,10 +27,17 @@
       <option value="knxLoadControlPin">KNX Load Control PIN</option>
     </select>
   </div>
+  <div class="form-row" id="alfasinapsi-telemetryPinsMode-row">
+    <label for="node-input-telemetryPinsMode"><i class="fa fa-random"></i> PIN Telemetria</label>
+    <select id="node-input-telemetryPinsMode">
+      <option value="singleTelemetryPin">PIN unico telemetria</option>
+      <option value="sixValuePins">6 PIN valori principali</option>
+    </select>
+  </div>
 </script>
 
 <script type="text/html" data-help-name="alfasinapsi-telemetry">
-	  <p><b>Telemetria Sinapsi Alfa</b> legge i dati da Sinapsi Alfa e invia messaggi dal suo unico output, in base alla compatibilita selezionata.</p>
+	  <p><b>Telemetria Sinapsi Alfa</b> legge i dati da Sinapsi Alfa e invia messaggi dalle sue uscite, in base alla compatibilita selezionata.</p>
 
 	  <h3>Video YouTube</h3>
 	  <p><a href="https://youtu.be/R-7PZv3iJ2s" target="_blank" rel="noopener noreferrer">Guarda il video: configurazione e utilizzo</a></p>
@@ -41,15 +48,17 @@
 		  </p>
 
 	  <h3>Uscite</h3>
-	  <p>Questo nodo ha 1 uscita. In base alla <i>Compatibilita</i> selezionata, cambia il formato dei messaggi emessi.</p>
 	  <ul>
-	    <li><b>Telemetria</b>: invia il messaggio principale con <code>msg.payload</code> (semplificato) e <code>msg.insight</code> (tecnico).</li>
-	    <li><b>KNX Load Control PIN</b>: invia un telegramma compatibile con l'ingresso del nodo KNX Load Control: <code>msg.shedding</code> = <code>shed</code>/<code>unshed</code> con la stessa frequenza del <b>Poll (ms)</b> (oppure solo al cambio stato se abiliti <i>Solo se cambia</i>).</li>
-	    <li><b>Stato connessione</b>: quando cambia lo stato del dispositivo, invia un messaggio con <code>msg.topic = alfasinapsi/telemetry/status</code> e <code>msg.status</code>.</li>
+	    <li><b>Compatibilita = Telemetria</b> + <b>PIN unico telemetria</b>: 1 uscita con il messaggio completo (<code>msg.payload</code> + <code>msg.insight</code>) e messaggi di stato connessione.</li>
+	    <li><b>Compatibilita = Telemetria</b> + <b>6 PIN valori principali</b>: 6 uscite dedicate ai valori principali:
+	      <code>consumptionKW</code>, <code>productionkW</code>, <code>selfConsumption</code>, <code>gridSale</code>, <code>gridPurchase</code>, <code>cutoff.hasWarning</code>.
+	    </li>
+	    <li><b>Compatibilita = KNX Load Control PIN</b>: 1 uscita con <code>shed</code>/<code>unshed</code>.</li>
 	  </ul>
+	  <p>In modalita <b>6 PIN valori principali</b>, le uscite numeriche emettono solo se il valore e' numerico; l'uscita <code>cutoff.hasWarning</code> emette solo se booleana.</p>
 
   <h3>msg.status (stato connessione)</h3>
-  <p>Ogni messaggio emesso include <code>msg.status</code>, con:</p>
+  <p>I messaggi emessi includono <code>msg.status</code>, con:</p>
   <ul>
     <li><code>status.connected</code> (boolean)</li>
     <li><code>status.connecting</code> (boolean)</li>
@@ -91,7 +100,7 @@
 		    <li><b>Import</b>: potenza/energia prelevata dalla rete (consumi piu di quanto produci).</li>
 		    <li><b>Export</b>: potenza/energia immessa in rete (produci piu di quanto consumi).</li>
 		    <li><b>Surplus</b>: potenza in eccesso disponibile. In questo pacchetto coincide con <b>Export</b> (campo <code>payload.power.surplusKW</code>).</li>
-		    <li><b>Production</b>: potenza/energia prodotta (per esempio da fotovoltaico).</li>
+		    <li><b>Produzione</b>: potenza/energia prodotta (per esempio da fotovoltaico).</li>
 		  </ul>
 
 		  <h3>msg.insight (tecnico)</h3>
@@ -133,17 +142,49 @@
 	    <dt>Compatibilita <span class="property-type">telemetry | knxLoadControlPin</span></dt>
 	    <dd>
 	      <ul>
-	        <li><code>Telemetria</code>: emette la telemetria (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
+	        <li><code>Telemetria</code>: emette telemetria completa o 6 PIN, in base alla modalita selezionata (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
 	        <li><code>KNX Load Control PIN</code>: emette <code>shed</code>/<code>unshed</code> (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
 	      </ul>
 		      Nota: se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, un <i>Poll</i> piu basso rende il controller piu reattivo.
 		    </dd>
+	    <dt>PIN Telemetria <span class="property-type">singleTelemetryPin | sixValuePins</span></dt>
+	    <dd>
+	      Se <code>singleTelemetryPin</code>, il nodo usa un solo output con tutta la telemetria.
+	      Se <code>sixValuePins</code>, il nodo usa 6 output con i valori principali.
+	    </dd>
 		  </dl>
 
 	</script>
 
 <script type="text/javascript">
   (function () {
+    const COMPATIBILITY_TELEMETRY = "telemetry";
+    const COMPATIBILITY_KNX_LOAD_CONTROL_PIN = "knxLoadControlPin";
+    const TELEMETRY_PINS_MODE_SINGLE = "singleTelemetryPin";
+    const TELEMETRY_PINS_MODE_VALUES = "sixValuePins";
+
+    function resolveOutputs(config) {
+      const compatibility = config.compatibility || COMPATIBILITY_TELEMETRY;
+      if (compatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN) return 1;
+      const telemetryPinsMode = config.telemetryPinsMode || TELEMETRY_PINS_MODE_SINGLE;
+      return telemetryPinsMode === TELEMETRY_PINS_MODE_VALUES ? 6 : 1;
+    }
+
+    function resolveOutputLabels(config) {
+      const compatibility = config.compatibility || COMPATIBILITY_TELEMETRY;
+      if (compatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN) return ["KNX Load Control PIN"];
+      const telemetryPinsMode = config.telemetryPinsMode || TELEMETRY_PINS_MODE_SINGLE;
+      if (telemetryPinsMode !== TELEMETRY_PINS_MODE_VALUES) return ["telemetria"];
+      return [
+        "Consumo (casa)",
+        "Produzione",
+        "% autoconsumo istantaneo",
+        "% vendita istantanea al gestore",
+        "% acquisto istantaneo dal gestore",
+        "Avviso distacco"
+      ];
+    }
+
     RED.nodes.registerType('alfasinapsi-telemetry', {
       category: 'AlfaSinapsi Ultimate',
       color: '#00BAFF',
@@ -152,15 +193,65 @@
         device: { value: "", type: "alfasinapsi-device", required: true },
         pollInterval: { value: 10000, validate: RED.validators.number() },
         sendOnChange: { value: false },
-        compatibility: { value: "telemetry" }
+        compatibility: { value: "telemetry" },
+        telemetryPinsMode: { value: "singleTelemetryPin" }
       },
       inputs: 0,
       outputs: 1,
-      outputLabels: function () {
-        return (this.compatibility === "knxLoadControlPin") ? "KNX Load Control PIN" : "telemetria";
+      outputLabels: function (index) {
+        const labels = resolveOutputLabels(this);
+        return labels[index] || ("output " + (index + 1));
       },
       icon: "font-awesome/fa-bolt",
-      label: function () { return this.name || "alfasinapsi telemetria"; }
+      label: function () { return this.name || "alfasinapsi telemetria"; },
+      onadd: function () {
+        const updateOutputs = () => {
+          try {
+            this.outputs = resolveOutputs(this);
+            if (Array.isArray(this.wires)) {
+              while (this.wires.length < this.outputs) this.wires.push([]);
+            }
+          } catch (_) {
+            this.outputs = 1;
+          }
+          try {
+            RED.view?.redraw?.();
+          } catch (_) {
+            // ignore
+          }
+        };
+        if (!this.telemetryPinsMode) {
+          this.telemetryPinsMode = Number(this.outputs) >= 6 ? TELEMETRY_PINS_MODE_VALUES : TELEMETRY_PINS_MODE_SINGLE;
+        }
+        updateOutputs();
+        setTimeout(updateOutputs, 0);
+      },
+      oneditprepare: function () {
+        const updateOutputPreview = () => {
+          const compatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
+          const telemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
+          $("#alfasinapsi-telemetryPinsMode-row").toggle(compatibility === COMPATIBILITY_TELEMETRY);
+          this.outputs = resolveOutputs({ compatibility, telemetryPinsMode });
+          try {
+            RED.view?.redraw?.();
+          } catch (_) {
+            // ignore
+          }
+        };
+
+        if (!this.telemetryPinsMode) {
+          const inferred = Number(this.outputs) >= 6 ? TELEMETRY_PINS_MODE_VALUES : TELEMETRY_PINS_MODE_SINGLE;
+          $("#node-input-telemetryPinsMode").val(inferred);
+        }
+        $("#node-input-compatibility").on("change", updateOutputPreview);
+        $("#node-input-telemetryPinsMode").on("change", updateOutputPreview);
+        updateOutputPreview();
+      },
+      oneditsave: function () {
+        const compatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
+        const telemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
+        this.outputs = resolveOutputs({ compatibility, telemetryPinsMode });
+      }
     });
   })();
 </script>
