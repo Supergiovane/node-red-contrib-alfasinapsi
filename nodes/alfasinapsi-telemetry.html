@@ -194,7 +194,8 @@
         pollInterval: { value: 10000, validate: RED.validators.number() },
         sendOnChange: { value: false },
         compatibility: { value: "telemetry" },
-        telemetryPinsMode: { value: "singleTelemetryPin" }
+        telemetryPinsMode: { value: "singleTelemetryPin" },
+        outputs: { value: 1 }
       },
       inputs: 0,
       outputs: 1,
@@ -227,22 +228,25 @@
         setTimeout(updateOutputs, 0);
       },
       oneditprepare: function () {
+        const inferredTelemetryPinsMode = Number(this.outputs) >= 6
+          ? TELEMETRY_PINS_MODE_VALUES
+          : TELEMETRY_PINS_MODE_SINGLE;
+        const compatibility = this.compatibility || COMPATIBILITY_TELEMETRY;
+        const telemetryPinsMode = this.telemetryPinsMode || inferredTelemetryPinsMode;
+        $("#node-input-compatibility").val(compatibility);
+        $("#node-input-telemetryPinsMode").val(telemetryPinsMode);
+
         const updateOutputPreview = () => {
-          const compatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
-          const telemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
-          $("#alfasinapsi-telemetryPinsMode-row").toggle(compatibility === COMPATIBILITY_TELEMETRY);
-          this.outputs = resolveOutputs({ compatibility, telemetryPinsMode });
+          const nextCompatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
+          const nextTelemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
+          $("#alfasinapsi-telemetryPinsMode-row").toggle(nextCompatibility === COMPATIBILITY_TELEMETRY);
+          this.outputs = resolveOutputs({ compatibility: nextCompatibility, telemetryPinsMode: nextTelemetryPinsMode });
           try {
             RED.view?.redraw?.();
           } catch (_) {
             // ignore
           }
         };
-
-        if (!this.telemetryPinsMode) {
-          const inferred = Number(this.outputs) >= 6 ? TELEMETRY_PINS_MODE_VALUES : TELEMETRY_PINS_MODE_SINGLE;
-          $("#node-input-telemetryPinsMode").val(inferred);
-        }
         $("#node-input-compatibility").on("change", updateOutputPreview);
         $("#node-input-telemetryPinsMode").on("change", updateOutputPreview);
         updateOutputPreview();
@@ -250,6 +254,8 @@
       oneditsave: function () {
         const compatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
         const telemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
+        this.compatibility = compatibility;
+        this.telemetryPinsMode = telemetryPinsMode;
         this.outputs = resolveOutputs({ compatibility, telemetryPinsMode });
       }
     });
