@@ -27,6 +27,10 @@
       <option value="knxLoadControlPin">KNX Load Control PIN</option>
     </select>
   </div>
+  <div class="form-row" id="alfasinapsi-unshedDelayMin-row">
+    <label for="node-input-unshedDelayMin"><i class="fa fa-clock-o"></i> Ritardo unshed (min)</label>
+    <input type="number" id="node-input-unshedDelayMin" min="0" placeholder="0">
+  </div>
   <div class="form-row" id="alfasinapsi-telemetryPinsMode-row">
     <label for="node-input-telemetryPinsMode"><i class="fa fa-random"></i> PIN Telemetria</label>
     <select id="node-input-telemetryPinsMode">
@@ -112,6 +116,7 @@
 	  <h3>Output: KNX Load Control PIN</h3>
 	  <p>
 	    Invia <code>shed</code> se la telemetria segnala un distacco imminente, altrimenti <code>unshed</code>.
+	    Se imposti <b>Ritardo unshed (min)</b>, il nodo continua a emettere <code>shed</code> per N minuti dopo l'ultimo warning, e solo dopo torna a <code>unshed</code>.
 	    La frequenza dei messaggi dipende da <b>Poll (ms)</b>. Se abiliti <i>Solo se cambia</i>, emette solo quando passa da <code>shed</code> a <code>unshed</code> (o viceversa).
 	  </p>
 	  <dl class="message-properties">
@@ -143,10 +148,12 @@
 	    <dd>
 	      <ul>
 	        <li><code>Telemetria</code>: emette telemetria completa o 6 PIN, in base alla modalita selezionata (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
-	        <li><code>KNX Load Control PIN</code>: emette <code>shed</code>/<code>unshed</code> (rispetta <i>Poll</i> e <i>Solo se cambia</i>).</li>
+	        <li><code>KNX Load Control PIN</code>: emette <code>shed</code>/<code>unshed</code> e puo ritardare il ritorno a <code>unshed</code> con <i>Ritardo unshed (min)</i>.</li>
 	      </ul>
 		      Nota: se colleghi l'output al nodo <code>alfasinapsi-load-controller</code>, un <i>Poll</i> piu basso rende il controller piu reattivo.
 		    </dd>
+	    <dt>Ritardo unshed (min) <span class="property-type">number</span></dt>
+	    <dd>Disponibile solo in <code>KNX Load Control PIN</code>. Mantiene l'output su <code>shed</code> per N minuti dopo l'ultimo warning, utile come anti-flapping. Impostare 0 per comportamento immediato.</dd>
 	    <dt>PIN Telemetria <span class="property-type">singleTelemetryPin | sixValuePins</span></dt>
 	    <dd>
 	      Se <code>singleTelemetryPin</code>, il nodo usa un solo output con tutta la telemetria.
@@ -188,15 +195,16 @@
     RED.nodes.registerType('alfasinapsi-telemetry', {
       category: 'AlfaSinapsi Ultimate',
       color: '#00BAFF',
-      defaults: {
-        name: { value: "" },
-        device: { value: "", type: "alfasinapsi-device", required: true },
-        pollInterval: { value: 10000, validate: RED.validators.number() },
-        sendOnChange: { value: false },
-        compatibility: { value: "telemetry" },
-        telemetryPinsMode: { value: "singleTelemetryPin" },
-        outputs: { value: 1 }
-      },
+	      defaults: {
+	        name: { value: "" },
+	        device: { value: "", type: "alfasinapsi-device", required: true },
+	        pollInterval: { value: 10000, validate: RED.validators.number() },
+	        sendOnChange: { value: false },
+	        compatibility: { value: "telemetry" },
+	        unshedDelayMin: { value: 0 },
+	        telemetryPinsMode: { value: "singleTelemetryPin" },
+	        outputs: { value: 1 }
+	      },
       inputs: 0,
       outputs: 1,
       outputLabels: function (index) {
@@ -231,17 +239,19 @@
         const inferredTelemetryPinsMode = Number(this.outputs) >= 6
           ? TELEMETRY_PINS_MODE_VALUES
           : TELEMETRY_PINS_MODE_SINGLE;
-        const compatibility = this.compatibility || COMPATIBILITY_TELEMETRY;
-        const telemetryPinsMode = this.telemetryPinsMode || inferredTelemetryPinsMode;
-        $("#node-input-compatibility").val(compatibility);
-        $("#node-input-telemetryPinsMode").val(telemetryPinsMode);
+	        const compatibility = this.compatibility || COMPATIBILITY_TELEMETRY;
+	        const telemetryPinsMode = this.telemetryPinsMode || inferredTelemetryPinsMode;
+	        $("#node-input-compatibility").val(compatibility);
+	        $("#node-input-unshedDelayMin").val(this.unshedDelayMin || 0);
+	        $("#node-input-telemetryPinsMode").val(telemetryPinsMode);
 
-        const updateOutputPreview = () => {
-          const nextCompatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
-          const nextTelemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
-          $("#alfasinapsi-telemetryPinsMode-row").toggle(nextCompatibility === COMPATIBILITY_TELEMETRY);
-          this.outputs = resolveOutputs({ compatibility: nextCompatibility, telemetryPinsMode: nextTelemetryPinsMode });
-          try {
+	        const updateOutputPreview = () => {
+	          const nextCompatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
+	          const nextTelemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
+	          $("#alfasinapsi-unshedDelayMin-row").toggle(nextCompatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN);
+	          $("#alfasinapsi-telemetryPinsMode-row").toggle(nextCompatibility === COMPATIBILITY_TELEMETRY);
+	          this.outputs = resolveOutputs({ compatibility: nextCompatibility, telemetryPinsMode: nextTelemetryPinsMode });
+	          try {
             RED.view?.redraw?.();
           } catch (_) {
             // ignore
@@ -251,13 +261,15 @@
         $("#node-input-telemetryPinsMode").on("change", updateOutputPreview);
         updateOutputPreview();
       },
-      oneditsave: function () {
-        const compatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
-        const telemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
-        this.compatibility = compatibility;
-        this.telemetryPinsMode = telemetryPinsMode;
-        this.outputs = resolveOutputs({ compatibility, telemetryPinsMode });
-      }
+	      oneditsave: function () {
+	        const compatibility = $("#node-input-compatibility").val() || COMPATIBILITY_TELEMETRY;
+	        const telemetryPinsMode = $("#node-input-telemetryPinsMode").val() || TELEMETRY_PINS_MODE_SINGLE;
+	        const unshedDelayMin = Number($("#node-input-unshedDelayMin").val()) || 0;
+	        this.compatibility = compatibility;
+	        this.unshedDelayMin = unshedDelayMin;
+	        this.telemetryPinsMode = telemetryPinsMode;
+	        this.outputs = resolveOutputs({ compatibility, telemetryPinsMode });
+	      }
     });
   })();
 </script>

@@ -155,9 +155,11 @@ module.exports = function (RED) {
       node.compatibility = config.compatibility || COMPATIBILITY_TELEMETRY;
       node.telemetryPinsMode = config.telemetryPinsMode
         || ((Number(config.outputs) >= OUTPUT_COUNT_VALUES) ? TELEMETRY_PINS_MODE_VALUES : TELEMETRY_PINS_MODE_SINGLE);
+      node.unshedDelayMin = Math.max(0, Number(config.unshedDelayMin || 0));
 
       const telemetryEnabled = node.compatibility === COMPATIBILITY_TELEMETRY;
       const telemetryValuesPinsEnabled = telemetryEnabled && node.telemetryPinsMode === TELEMETRY_PINS_MODE_VALUES;
+      const knxUnshedDelayMs = node.unshedDelayMin * 60 * 1000;
 
       node.pollInterval = Math.max(500, Number(config.pollInterval || 10000));
 
@@ -165,6 +167,7 @@ module.exports = function (RED) {
       let timer = null;
       let inFlight = false;
       let lastShedding = null;
+      let lastKnxShedAtMs = 0;
       let currentStatus = { connected: false, connecting: false, error: null, ts: Date.now() };
       let lastStatusSignature = null;
       let bootstrapDone = false;
@@ -219,7 +222,13 @@ module.exports = function (RED) {
 
           if (node.compatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN) {
             const hasWarning = !!telemetry?.cutoff?.hasWarning;
-            const shedding = hasWarning ? "shed" : "unshed";
+            const now = Date.now();
+            if (hasWarning) lastKnxShedAtMs = now;
+            const keepShedForDelay = !hasWarning
+              && knxUnshedDelayMs > 0
+              && lastKnxShedAtMs > 0
+              && (now - lastKnxShedAtMs) < knxUnshedDelayMs;
+            const shedding = (hasWarning || keepShedForDelay) ? "shed" : "unshed";
             if (node.sendOnChange && lastShedding != null && lastShedding === shedding) return;
             lastShedding = shedding;
             const out = buildOutputMessages(OUTPUT_COUNT_SINGLE, {

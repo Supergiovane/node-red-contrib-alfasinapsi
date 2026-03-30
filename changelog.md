@@ -3,7 +3,8 @@
 <br/>
 
 <p>
-<b>Version 1.1.4</b> - March 2026<br/>
+<b>Version 1.1.5</b> - March 2026<br/>
+- NEW: telemetry node now supports optional <code>Ritardo unshed</code> in <code>KNX Load Control PIN</code> mode to delay <code>unshed</code> for N minuti dopo l'ultimo <code>shed</code> (anti-flapping).<br/>
 - NEW: telemetry node now supports selectable telemetry pin modes: <code>singleTelemetryPin</code> (single full-telemetry output) or <code>sixValuePins</code> (6 dedicated value outputs).<br/>
 - NEW: added dedicated telemetry outputs for key values: <code>consumptionKW</code>, <code>productionkW</code>, <code>selfConsumption</code>, <code>gridSale</code>, <code>gridPurchase</code>, <code>cutoff.hasWarning</code>.<br/>
 - CHANGE: when telemetry pin mode is <code>sixValuePins</code>, each output emits only its own value and only if type-valid (numeric outputs require finite numbers, <code>cutoff.hasWarning</code> requires boolean).<br/>
