@@ -158,4 +158,4 @@ Come configurare i carichi:
 [standard-image]: https://img.shields.io/badge/code%20style-standard-brightgreen.svg
 [standard-url]: https://standardjs.com
 [youtube-image]: https://img.shields.io/badge/YouTube-Subscribe-red?logo=youtube&logoColor=white
-[youtube-url]: https://www.youtube.com/@Supergiovane
+[youtube-url]: https://www.youtube.com/@maxsupervibe
