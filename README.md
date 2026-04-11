@@ -77,7 +77,7 @@ In piu:
 Puoi scegliere cosa emettere dall'output con <i>Compatibilita</i>:
 
 - <b>Telemetria</b> (consigliato): misure semplificate + dettagli tecnici.
-- <b>KNX Load Control PIN</b>: messaggio `shed/unshed` (utile se lo colleghi a un nodo KNX Load Control), con opzione per ritardare `unshed`.
+- <b>KNX Load Control PIN</b>: messaggi `shed/unshed` (utile se lo colleghi a un nodo KNX Load Control), con intervallo dedicato per `unshed`.
 
 Uso tipico:
 
@@ -104,9 +104,10 @@ Struttura del messaggio (modalita <b>Telemetria</b>):
 
 Struttura del messaggio (modalita <b>KNX Load Control PIN</b>):
 
-- `msg.payload = "shed"` se e' presente un avviso distacco imminente, altrimenti `msg.payload = "unshed"`
+- Se c'e un avviso distacco imminente: `msg.payload = "shed"` a ogni `Poll (ms)` (continuamente)
+- Se non c'e allarme: `msg.payload = "unshed"` periodicamente ogni `Intervallo unshed (min)`, a partire dall'avvio del nodo
 - `msg.shedding` con lo stesso valore
-- Se configuri `Ritardo unshed (min)`, il nodo mantiene `shed` per N minuti dopo l'ultimo warning prima di tornare a `unshed`
+- In modalita KNX, `Solo se cambia` e' ignorato
 
 ## Terminologia (import/export/surplus)
 

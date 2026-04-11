@@ -13,8 +13,12 @@ function decodeUint32(words, wordOrder) {
 }
 
 function isNoCutoffWarning(eventEpoch) {
-  // In HA: > 4294967294 => nessun avviso
-  return Number(eventEpoch) > 4294967294;
+  // Alcuni contatori riportano "nessun avviso" con sentinelle alte (0xFFFFFFFE/0xFFFFFFFF),
+  // altri con 0. Trattiamo entrambi i casi come "no warning".
+  const n = Number(eventEpoch);
+  if (!Number.isFinite(n)) return true;
+  if (n <= 0) return true;
+  return n >= 4294967294;
 }
 
 function toIsoLocalFromEpochSeconds(epochSeconds) {

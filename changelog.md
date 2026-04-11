@@ -3,8 +3,16 @@
 <br/>
 
 <p>
+<b>Version 1.1.6</b> - April 2026<br/>
+- FIX: cutoff warning decoding now treats <code>0</code>/non-numeric and sentinel values (<code>0xFFFFFFFE</code>/<code>0xFFFFFFFF</code>) as "no warning", preventing false <code>shed</code> triggers.<br/>
+- CHANGE: in <code>KNX Load Control PIN</code> mode, real alarm now emits <code>shed</code> continuously at <code>Poll (ms)</code>.<br/>
+- CHANGE: in <code>KNX Load Control PIN</code> mode with no alarm, the node emits periodic <code>unshed</code> every <code>unshedDelayMin</code> minutes starting from node startup (if set to <code>0</code>, it falls back to <code>Poll (ms)</code>).<br/>
+- CHANGE: in <code>KNX Load Control PIN</code> mode, <code>sendOnChange</code> is ignored.<br/>
+- DOC: renamed KNX field/help from <code>Ritardo unshed</code> to <code>Intervallo unshed</code>.<br/>
+</p>
+
+<p>
 <b>Version 1.1.5</b> - March 2026<br/>
-- NEW: telemetry node now supports optional <code>Ritardo unshed</code> in <code>KNX Load Control PIN</code> mode to delay <code>unshed</code> for N minuti dopo l'ultimo <code>shed</code> (anti-flapping).<br/>
 - NEW: telemetry node now supports selectable telemetry pin modes: <code>singleTelemetryPin</code> (single full-telemetry output) or <code>sixValuePins</code> (6 dedicated value outputs).<br/>
 - NEW: added dedicated telemetry outputs for key values: <code>consumptionKW</code>, <code>productionkW</code>, <code>selfConsumption</code>, <code>gridSale</code>, <code>gridPurchase</code>, <code>cutoff.hasWarning</code>.<br/>
 - CHANGE: when telemetry pin mode is <code>sixValuePins</code>, each output emits only its own value and only if type-valid (numeric outputs require finite numbers, <code>cutoff.hasWarning</code> requires boolean).<br/>

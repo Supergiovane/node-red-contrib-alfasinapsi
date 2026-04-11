@@ -37,8 +37,19 @@ module.exports = function (RED) {
     return Math.round(n * 10) / 10;
   }
 
+  function normalizeWarningFlag(value) {
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return Number.isFinite(value) && value > 0;
+    if (typeof value === "string") {
+      const normalized = value.trim().toLowerCase();
+      if (["true", "1", "yes", "on"].includes(normalized)) return true;
+      if (["false", "0", "no", "off", "", "null", "undefined"].includes(normalized)) return false;
+    }
+    return false;
+  }
+
   function simplifyTelemetry(telemetry) {
-    const hasWarning = !!telemetry?.cutoff?.hasWarning;
+    const hasWarning = normalizeWarningFlag(telemetry?.cutoff?.hasWarning);
     const powerImportW = Number(telemetry?.power?.importW ?? 0);
     const powerExportW = Number(telemetry?.power?.exportW ?? 0);
     const powerProductionW = Number(telemetry?.power?.productionW ?? 0);
@@ -156,18 +167,18 @@ module.exports = function (RED) {
       node.telemetryPinsMode = config.telemetryPinsMode
         || ((Number(config.outputs) >= OUTPUT_COUNT_VALUES) ? TELEMETRY_PINS_MODE_VALUES : TELEMETRY_PINS_MODE_SINGLE);
       node.unshedDelayMin = Math.max(0, Number(config.unshedDelayMin || 0));
+      node.pollInterval = Math.max(500, Number(config.pollInterval || 10000));
 
       const telemetryEnabled = node.compatibility === COMPATIBILITY_TELEMETRY;
       const telemetryValuesPinsEnabled = telemetryEnabled && node.telemetryPinsMode === TELEMETRY_PINS_MODE_VALUES;
-      const knxUnshedDelayMs = node.unshedDelayMin * 60 * 1000;
-
-      node.pollInterval = Math.max(500, Number(config.pollInterval || 10000));
+      const knxUnshedIntervalMs = node.unshedDelayMin > 0
+        ? node.unshedDelayMin * 60 * 1000
+        : 10 * 60 * 1000;
 
       let lastPayloadCore = null;
       let timer = null;
       let inFlight = false;
-      let lastShedding = null;
-      let lastKnxShedAtMs = 0;
+      let nextKnxUnshedAtMs = 0;
       let currentStatus = { connected: false, connecting: false, error: null, ts: Date.now() };
       let lastStatusSignature = null;
       let bootstrapDone = false;
@@ -221,16 +232,22 @@ module.exports = function (RED) {
           const telemetry = await readTelemetry(node.device, { wordOrder: node.device.wordOrder });
 
           if (node.compatibility === COMPATIBILITY_KNX_LOAD_CONTROL_PIN) {
-            const hasWarning = !!telemetry?.cutoff?.hasWarning;
+            const hasWarning = normalizeWarningFlag(telemetry?.cutoff?.hasWarning);
             const now = Date.now();
-            if (hasWarning) lastKnxShedAtMs = now;
-            const keepShedForDelay = !hasWarning
-              && knxUnshedDelayMs > 0
-              && lastKnxShedAtMs > 0
-              && (now - lastKnxShedAtMs) < knxUnshedDelayMs;
-            const shedding = (hasWarning || keepShedForDelay) ? "shed" : "unshed";
-            if (node.sendOnChange && lastShedding != null && lastShedding === shedding) return;
-            lastShedding = shedding;
+            let shedding = "unshed";
+            let shouldSend = false;
+
+            if (hasWarning) {
+              shedding = "shed";
+              shouldSend = true; // In allarme: invia shed a ogni poll.
+              nextKnxUnshedAtMs = 0;
+            } else if (nextKnxUnshedAtMs === 0 || now >= nextKnxUnshedAtMs) {
+              shedding = "unshed";
+              shouldSend = true; // No allarme: invia unshed a intervallo unshedDelayMin.
+              nextKnxUnshedAtMs = now + knxUnshedIntervalMs;
+            }
+
+            if (!shouldSend) return;
             const out = buildOutputMessages(OUTPUT_COUNT_SINGLE, {
               topic: "alfasinapsi/telemetry/knx-load-control-pin",
               payload: shedding,
@@ -353,15 +370,15 @@ module.exports = function (RED) {
         if (!node.device) return;
         bootstrapDone = true;
 
-	        try {
-	          node.device.on("alfasinapsi:status", onStatus);
-	        } catch (err) {
-	          reportError(err, "device.on");
-	        }
+        try {
+          node.device.on("alfasinapsi:status", onStatus);
+        } catch (err) {
+          reportError(err, "device.on");
+        }
 
-	        timer = setInterval(() => {
-	          tick().catch((err) => reportError(err, "tick(unhandled)"));
-	        }, node.pollInterval);
+        timer = setInterval(() => {
+          tick().catch((err) => reportError(err, "tick(unhandled)"));
+        }, node.pollInterval);
         tick().catch((err) => reportError(err, "tick(first)"));
       };
 
@@ -384,13 +401,13 @@ module.exports = function (RED) {
       node.on("close", (removed, done) => {
         try {
           if (resolveTimer) clearTimeout(resolveTimer);
-	          resolveTimer = null;
-	          if (timer) clearInterval(timer);
-	          timer = null;
-	          try {
-	            node.device?.off?.("alfasinapsi:status", onStatus);
-	          } catch (err) {
-	            reportError(err, "device.off");
+          resolveTimer = null;
+          if (timer) clearInterval(timer);
+          timer = null;
+          try {
+            node.device?.off?.("alfasinapsi:status", onStatus);
+          } catch (err) {
+            reportError(err, "device.off");
           }
         } catch (err) {
           reportError(err, "close");
