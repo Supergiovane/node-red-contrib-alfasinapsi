@@ -3,6 +3,11 @@
 <br/>
 
 <p>
+<b>Version 1.1.7</b> - April 2026<br/>
+- CHORE: patch release per allineare il versioning del pacchetto e il changelog.<br/>
+</p>
+
+<p>
 <b>Version 1.1.6</b> - April 2026<br/>
 - FIX: cutoff warning decoding now treats <code>0</code>/non-numeric and sentinel values (<code>0xFFFFFFFE</code>/<code>0xFFFFFFFF</code>) as "no warning", preventing false <code>shed</code> triggers.<br/>
 - CHANGE: in <code>KNX Load Control PIN</code> mode, real alarm now emits <code>shed</code> continuously at <code>Poll (ms)</code>.<br/>
